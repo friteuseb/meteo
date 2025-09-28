@@ -96,49 +96,34 @@
             color: #ff0000;
         }
 
-        .comparison-section {
+        .weather-visual {
             margin: 30px 0;
-            border: double 3px #ffff00;
+            border: double 3px #00ff00;
             padding: 20px;
+            text-align: center;
         }
 
-        .comparison-title {
+        .visual-title {
             color: #ffff00;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
         }
 
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .fake-weather {
-            border: 1px solid #ff0000;
-            padding: 15px;
-            color: #ff9999;
-        }
-
-        .real-weather {
-            border: 1px solid #00ff00;
-            padding: 15px;
-            color: #99ff99;
-        }
-
-        .fake-title, .real-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .fake-title {
-            color: #ff0000;
-        }
-
-        .real-title {
+        .ascii-weather {
+            font-size: 10px;
+            line-height: 1;
             color: #00ff00;
+            margin: 20px auto;
+            white-space: pre;
+            font-family: monospace;
+        }
+
+        .weather-description {
+            color: #ffff00;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
         }
 
         .activity-section {
@@ -203,11 +188,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .comparison-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
             .activity-grid {
                 grid-template-columns: 1fr;
             }
@@ -228,6 +208,16 @@
         </div>
 
         <div id="weather-content" style="display: none;">
+            <div class="weather-visual">
+                <div class="visual-title">[ CONDITIONS ACTUELLES ]</div>
+                <div class="ascii-weather" id="ascii-weather">
+                    <!-- ASCII art sera inséré ici par JavaScript -->
+                </div>
+                <div class="weather-description" id="weather-description">
+                    <!-- Description sera insérée ici -->
+                </div>
+            </div>
+
             <div class="main-grid">
                 <div class="panel">
                     <div class="panel-title">[ TEMPERATURE ]</div>
@@ -302,32 +292,6 @@
                 </div>
             </div>
 
-            <div class="comparison-section">
-                <div class="comparison-title">[ COMPARAISON ]</div>
-                <div class="comparison-grid">
-                    <div class="fake-weather">
-                        <div class="fake-title">📱 APPS METEᲝ CLASSIQUES:</div>
-                        <div id="fake-forecast">
-                            ⚠️ ALERTE METEO EN COURS!<br>
-                            🌧️ Risque d'averses orageuses<br>
-                            ❄️ Températures glaciales ressenties<br>
-                            💨 Vents violents jusqu'à 25 km/h<br>
-                            ⛈️ Situation météorologique dégradée
-                        </div>
-                    </div>
-                    <div class="real-weather">
-                        <div class="real-title">📊 METEO AMIENS FACTUELLE:</div>
-                        <div id="real-forecast">
-                            ✓ 23% de pluie légère possible<br>
-                            ✓ Température normale pour novembre<br>
-                            ✓ Petit vent de 12 km/h (= brise)<br>
-                            ✓ Aucun danger météorologique<br>
-                            ✓ Conditions tout à fait supportables
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="activity-section">
                 <div class="activity-title">[ ACTIVITES CONSEILLEES ]</div>
                 <div class="activity-grid">
@@ -377,6 +341,76 @@
         const AMIENS_LAT = 49.9;
         const AMIENS_LON = 2.3;
 
+        // Dessins ASCII pour chaque condition météo
+        const weatherAsciiArt = {
+            sunny: `
+           \\   /
+            .-.
+         ― (   ) ―
+            \`-'
+           /   \\`,
+
+            partlyCloudy: `
+           \\  /
+         _ /"".-.
+           \\_(   ).
+           /(_____)`,
+
+            cloudy: `
+              .--.
+           .-(    ).
+          (___.__)__)`,
+
+            rainy: `
+              .--.
+           .-(    ).
+          (___.__)__)
+           ‚'‚'‚'‚'
+           ‚'‚'‚'‚'`,
+
+            heavyRain: `
+              .--.
+           .-(    ).
+          (___.__)__)
+          ///////////
+         ///////////`,
+
+            stormy: `
+              .--.
+           .-(    ).
+          (___.__)__)
+           ⚡‚'⚡‚'⚡
+           ‚'⚡‚'⚡‚'`,
+
+            snowy: `
+              .--.
+           .-(    ).
+          (___.__)__)
+           * * * * *
+          * * * * *`,
+
+            foggy: `
+          _ - _ - _ -
+        _ - _ - _ -
+          _ - _ - _ -
+        _ - _ - _ -
+          _ - _ - _ -`,
+
+            windy: `
+        ~~~~     ~~~~
+      ~~~~   ~~~~
+        ~~~~     ~~~~
+      ~~~~   ~~~~
+        ~~~~     ~~~~`,
+
+            night: `
+              .-.
+            (  ₀ )
+              \`-'
+           * ˚  . *
+          .  *  ˚  .`
+        };
+
         // Classification des vents selon échelle de Beaufort
         function getWindClassification(speed) {
             if (speed < 6) return "CALME";
@@ -395,64 +429,105 @@
             return directions[index];
         }
 
-        // Analyser si la météo est dramatisée
-        function generateFakeForecast(data) {
-            const current = data.current;
-            let fake = [];
-            
-            if (current.precipitation > 0.1) {
-                fake.push("⚠️ ALERTE PLUIE - Risque d'inondations locales");
-            } else if (current.cloud_cover > 50) {
-                fake.push("🌧️ Ciel menaçant - Averses imminentes");
-            }
-            
-            if (current.temperature_2m < 15) {
-                fake.push("❄️ Vague de froid - Températures polaires");
-            } else if (current.temperature_2m > 25) {
-                fake.push("🔥 Canicule dangereuse - Hydratez-vous!");
-            }
-            
-            if (current.wind_speed_10m > 15) {
-                fake.push("💨 Tempête en approche - Vents destructeurs");
-            }
-            
-            if (fake.length === 0) {
-                fake.push("⚠️ Vigilance météo - Conditions instables");
-            }
-            
-            return fake.join("<br>");
-        }
+        // Déterminer l'ASCII art et la description selon le code météo
+        function getWeatherVisualization(weatherCode, isDay, precipitation, cloudCover, windSpeed) {
+            let art = "";
+            let description = "";
 
-        function generateRealForecast(data) {
-            const current = data.current;
-            let real = [];
-            
-            // Température
-            if (current.temperature_2m < 5) {
-                real.push("✓ Il fait froid (normal en hiver)");
-            } else if (current.temperature_2m > 30) {
-                real.push("✓ Il fait chaud (normal en été)");
-            } else {
-                real.push("✓ Température tout à fait normale");
+            // Codes météo WMO
+            // 0: Clear sky
+            // 1, 2, 3: Mainly clear, partly cloudy, and overcast
+            // 45, 48: Fog and depositing rime fog
+            // 51, 53, 55: Drizzle: Light, moderate, and dense intensity
+            // 61, 63, 65: Rain: Slight, moderate and heavy intensity
+            // 71, 73, 75: Snow fall: Slight, moderate, and heavy intensity
+            // 80, 81, 82: Rain showers: Slight, moderate, and violent
+            // 95: Thunderstorm: Slight or moderate
+            // 96, 99: Thunderstorm with slight and heavy hail
+
+            if (!isDay) {
+                art = weatherAsciiArt.night;
+                description = "NUIT ";
             }
-            
-            // Pluie
-            if (current.precipitation > 5) {
-                real.push("✓ Il pleut actuellement");
-            } else {
-                real.push("✓ Pas de pluie significative");
+
+            switch(weatherCode) {
+                case 0:
+                    if (isDay) {
+                        art = weatherAsciiArt.sunny;
+                        description = "ENSOLEILLE";
+                    } else {
+                        description += "CLAIRE";
+                    }
+                    break;
+                case 1:
+                case 2:
+                    if (isDay) {
+                        art = weatherAsciiArt.partlyCloudy;
+                        description = "PARTIELLEMENT NUAGEUX";
+                    } else {
+                        description += "PARTIELLEMENT NUAGEUSE";
+                    }
+                    break;
+                case 3:
+                    art = weatherAsciiArt.cloudy;
+                    description = isDay ? "NUAGEUX" : description + "NUAGEUSE";
+                    break;
+                case 45:
+                case 48:
+                    art = weatherAsciiArt.foggy;
+                    description = "BROUILLARD";
+                    break;
+                case 51:
+                case 53:
+                case 55:
+                    art = weatherAsciiArt.rainy;
+                    description = "BRUINE";
+                    break;
+                case 61:
+                case 63:
+                case 65:
+                    art = weatherAsciiArt.rainy;
+                    description = weatherCode === 65 ? "FORTE PLUIE" : "PLUIE";
+                    break;
+                case 71:
+                case 73:
+                case 75:
+                    art = weatherAsciiArt.snowy;
+                    description = "NEIGE";
+                    break;
+                case 80:
+                case 81:
+                case 82:
+                    art = weatherAsciiArt.heavyRain;
+                    description = "AVERSES";
+                    break;
+                case 95:
+                case 96:
+                case 99:
+                    art = weatherAsciiArt.stormy;
+                    description = "ORAGE";
+                    break;
+                default:
+                    // Fallback basé sur d'autres paramètres
+                    if (precipitation > 0.5) {
+                        art = weatherAsciiArt.rainy;
+                        description = "PLUVIEUX";
+                    } else if (cloudCover > 70) {
+                        art = weatherAsciiArt.cloudy;
+                        description = "TRES NUAGEUX";
+                    } else if (cloudCover > 30) {
+                        art = weatherAsciiArt.partlyCloudy;
+                        description = "PARTIELLEMENT NUAGEUX";
+                    } else if (windSpeed > 30) {
+                        art = weatherAsciiArt.windy;
+                        description = "VENTEUX";
+                    } else {
+                        art = isDay ? weatherAsciiArt.sunny : weatherAsciiArt.night;
+                        description = isDay ? "CLAIR" : "NUIT CLAIRE";
+                    }
             }
-            
-            // Vent
-            if (current.wind_speed_10m < 30) {
-                real.push("✓ Vent sans danger");
-            } else {
-                real.push("⚠️ Vent effectivement fort");
-            }
-            
-            real.push("✓ Sortez sans crainte");
-            
-            return real.join("<br>");
+
+            return { art, description };
         }
 
         // Calculer les recommandations d'activités
@@ -461,7 +536,7 @@
             const temp = current.temperature_2m;
             const rain = current.precipitation;
             const wind = current.wind_speed_10m;
-            
+
             return {
                 sport: rain < 0.1 && wind < 25 ? "PARFAIT" : rain < 1 ? "ACCEPTABLE" : "REPORTER",
                 picnic: temp > 15 && rain < 0.1 ? "IDEAL" : temp > 10 ? "PREVOIR PULL" : "TROP FROID",
@@ -475,7 +550,7 @@
         async function loadWeatherData() {
             try {
                 const response = await fetch(
-                    `https://api.open-meteo.com/v1/forecast?latitude=${AMIENS_LAT}&longitude=${AMIENS_LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Europe%2FParis&forecast_days=1`
+                    `https://api.open-meteo.com/v1/forecast?latitude=${AMIENS_LAT}&longitude=${AMIENS_LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Europe%2FParis&forecast_days=1`
                 );
 
                 if (!response.ok) {
@@ -484,16 +559,16 @@
 
                 const data = await response.json();
                 displayWeatherData(data);
-                
+
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('weather-content').style.display = 'block';
-                
-                document.getElementById('timestamp').textContent = 
+
+                document.getElementById('timestamp').textContent =
                     `DERNIERE MAJ: ${new Date().toLocaleString('fr-FR')}`;
 
             } catch (error) {
                 console.error('Erreur:', error);
-                document.getElementById('loading').innerHTML = 
+                document.getElementById('loading').innerHTML =
                     '<span style="color: #ff0000;">ERREUR CONNEXION SATELLITE - RETRY...</span>';
             }
         }
@@ -506,24 +581,31 @@
             document.getElementById('temp-current').textContent = `${Math.round(current.temperature_2m)}°C`;
             document.getElementById('temp-feels').textContent = `${Math.round(current.apparent_temperature)}°C`;
             document.getElementById('temp-minmax').textContent = `${Math.round(daily.temperature_2m_min[0])}°C / ${Math.round(daily.temperature_2m_max[0])}°C`;
-            
+
             // Précipitations
             const rainProb = daily.precipitation_probability_max[0] || 0;
             document.getElementById('rain-prob').textContent = `${rainProb}%`;
             document.getElementById('rain-amount').textContent = current.precipitation > 0 ? `${current.precipitation.toFixed(1)} mm` : "< 0.1 mm";
             document.getElementById('umbrella-needed').textContent = rainProb > 70 ? "OUI" : "NON";
-            
+
             // Vent
             document.getElementById('wind-speed').textContent = `${Math.round(current.wind_speed_10m)} km/h`;
             document.getElementById('wind-gusts').textContent = `${Math.round(current.wind_gusts_10m)} km/h`;
             document.getElementById('wind-direction').textContent = getWindDirection(current.wind_direction_10m);
             document.getElementById('wind-class').textContent = getWindClassification(current.wind_speed_10m);
             document.getElementById('wind-danger').textContent = current.wind_speed_10m > 50 ? "OUI" : "NON";
-            
-            // Comparaisons
-            document.getElementById('fake-forecast').innerHTML = generateFakeForecast(data);
-            document.getElementById('real-forecast').innerHTML = generateRealForecast(data);
-            
+
+            // ASCII Art et description météo
+            const visualization = getWeatherVisualization(
+                current.weather_code,
+                current.is_day === 1,
+                current.precipitation,
+                current.cloud_cover,
+                current.wind_speed_10m
+            );
+            document.getElementById('ascii-weather').textContent = visualization.art;
+            document.getElementById('weather-description').textContent = visualization.description;
+
             // Activités
             const activities = calculateActivities(data);
             document.getElementById('activity-sport').textContent = activities.sport;
@@ -532,7 +614,7 @@
             document.getElementById('activity-laundry').textContent = activities.laundry;
             document.getElementById('activity-bbq').textContent = activities.bbq;
             document.getElementById('activity-car').textContent = activities.car;
-            
+
             // Colorer selon les résultats
             ['sport', 'picnic', 'garden', 'laundry', 'bbq', 'car'].forEach(activity => {
                 const element = document.getElementById(`activity-${activity}`);
