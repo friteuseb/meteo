@@ -346,6 +346,7 @@
             <div class="title">═══ METEO AMIENS ═══</div>
             <div class="subtitle">Données en temps réel</div>
             <div class="timestamp" id="timestamp">DERNIERE MAJ: --</div>
+            <button onclick="loadWeatherData(true)" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; margin-top: 10px; cursor: pointer; font-family: inherit; font-size: 11px;">↻ RAFRAICHIR</button>
         </div>
 
         <div class="loading" id="loading">
@@ -918,24 +919,76 @@
             };
         }
 
-        async function loadWeatherData() {
-            try {
-                const response = await fetch(
-                    `https://api.open-meteo.com/v1/forecast?latitude=${AMIENS_LAT}&longitude=${AMIENS_LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,sunrise,sunset,uv_index_max,weather_code&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m&timezone=Europe%2FParis&forecast_days=7`
-                );
+        // Système de cache pour limiter les appels API
+        const CACHE_KEY = 'meteo_amiens_cache';
+        const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes en millisecondes
 
-                if (!response.ok) {
-                    throw new Error('Erreur chargement données');
+        function getCachedData() {
+            try {
+                const cached = localStorage.getItem(CACHE_KEY);
+                if (cached) {
+                    const { data, timestamp } = JSON.parse(cached);
+                    const now = Date.now();
+                    // Vérifier si le cache est encore valide
+                    if (now - timestamp < CACHE_DURATION) {
+                        console.log('Utilisation du cache (valide pendant', Math.round((CACHE_DURATION - (now - timestamp)) / 1000), 'secondes)');
+                        return data;
+                    } else {
+                        console.log('Cache expiré, nouvelle requête API');
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lecture cache:', error);
+            }
+            return null;
+        }
+
+        function setCachedData(data) {
+            try {
+                const cacheObject = {
+                    data: data,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cacheObject));
+                console.log('Données mises en cache');
+            } catch (error) {
+                console.error('Erreur écriture cache:', error);
+            }
+        }
+
+        async function loadWeatherData(forceRefresh = false) {
+            try {
+                let data = null;
+
+                // Essayer de récupérer depuis le cache sauf si forceRefresh est activé
+                if (!forceRefresh) {
+                    data = getCachedData();
                 }
 
-                const data = await response.json();
+                // Si pas de données en cache ou forceRefresh, faire un appel API
+                if (!data) {
+                    const response = await fetch(
+                        `https://api.open-meteo.com/v1/forecast?latitude=${AMIENS_LAT}&longitude=${AMIENS_LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,sunrise,sunset,uv_index_max,weather_code&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m&timezone=Europe%2FParis&forecast_days=7`
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('Erreur chargement données');
+                    }
+
+                    data = await response.json();
+                    // Mettre en cache les nouvelles données
+                    setCachedData(data);
+                }
+
                 displayWeatherData(data);
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('weather-content').style.display = 'block';
 
+                // Afficher l'heure de dernière mise à jour depuis les données
+                const cacheInfo = getCachedData() ? ' (depuis cache)' : ' (nouvelles données)';
                 document.getElementById('timestamp').textContent =
-                    `DERNIERE MAJ: ${new Date().toLocaleString('fr-FR')}`;
+                    `DERNIERE MAJ: ${new Date().toLocaleString('fr-FR')}${cacheInfo}`;
 
             } catch (error) {
                 console.error('Erreur:', error);
@@ -1079,8 +1132,21 @@
         // Charger les données au démarrage
         loadWeatherData();
 
-        // Actualiser toutes les 10 minutes
-        setInterval(loadWeatherData, 600000);
+        // Actualiser toutes les 10 minutes (force le rafraîchissement depuis l'API)
+        setInterval(() => loadWeatherData(true), 600000);
+
+        // Vérifier le cache toutes les 30 secondes pour mettre à jour le compteur
+        setInterval(() => {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                const { timestamp } = JSON.parse(cached);
+                const now = Date.now();
+                const remaining = Math.round((CACHE_DURATION - (now - timestamp)) / 1000);
+                if (remaining > 0) {
+                    console.log('Cache valide pendant encore', remaining, 'secondes');
+                }
+            }
+        }, 30000);
     </script>
 </body>
 </html>
