@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STATION METEO AMIENS - DONNEES BRUTES</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border: double 3px #00ff00;
+            padding: 15px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #ffff00;
+        }
+
+        .timestamp {
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            border: solid 1px #00ff00;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .panel-title {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .data-line {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .label {
+            color: #ccc;
+        }
+
+        .value {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .value.warning {
+            color: #ffff00;
+        }
+
+        .value.danger {
+            color: #ff0000;
+        }
+
+        .comparison-section {
+            margin: 30px 0;
+            border: double 3px #ffff00;
+            padding: 20px;
+        }
+
+        .comparison-title {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .fake-weather {
+            border: 1px solid #ff0000;
+            padding: 15px;
+            color: #ff9999;
+        }
+
+        .real-weather {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            color: #99ff99;
+        }
+
+        .fake-title, .real-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .fake-title {
+            color: #ff0000;
+        }
+
+        .real-title {
+            color: #00ff00;
+        }
+
+        .activity-section {
+            margin: 30px 0;
+            border: solid 1px #888;
+            padding: 20px;
+        }
+
+        .activity-title {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dotted #333;
+        }
+
+        .status-ok { color: #00ff00; }
+        .status-caution { color: #ffff00; }
+        .status-bad { color: #ff0000; }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        .ascii-art {
+            color: #888;
+            font-size: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading {
+            color: #ffff00;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 12px;
+                padding: 10px;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">═══ STATION METEOROLOGIQUE AMIENS ═══</div>
+            <div class="subtitle">DONNEES BRUTES - SANS MANIPULATION - SANS MENSONGE</div>
+            <div class="timestamp" id="timestamp">DERNIERE MAJ: --</div>
+        </div>
+
+        <div class="loading" id="loading">
+            CHARGEMENT DES DONNEES SATELLITAIRES...
+            [████████████████████████████████████████] 100%
+        </div>
+
+        <div id="weather-content" style="display: none;">
+            <div class="main-grid">
+                <div class="panel">
+                    <div class="panel-title">[ TEMPERATURE REELLE ]</div>
+                    <div class="data-line">
+                        <span class="label">ACTUELLE:</span>
+                        <span class="value" id="temp-current">--°C</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">RESSENTIE:</span>
+                        <span class="value" id="temp-feels">--°C</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">MIN/MAX:</span>
+                        <span class="value" id="temp-minmax">--°C / --°C</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">TENDANCE 3H:</span>
+                        <span class="value" id="temp-trend">STABLE</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">NORMAL SAISON:</span>
+                        <span class="value" id="temp-normal">OUI</span>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">[ PRECIPITATIONS FACTUELLES ]</div>
+                    <div class="data-line">
+                        <span class="label">PROBABILITE:</span>
+                        <span class="value" id="rain-prob">--%</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">QUANTITE SI PLUIE:</span>
+                        <span class="value" id="rain-amount">-- mm</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">DERNIERE PLUIE:</span>
+                        <span class="value" id="last-rain">-- JOURS</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">CUMUL SEMAINE:</span>
+                        <span class="value" id="week-rain">-- mm</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">PARAPLUIE REQUIS:</span>
+                        <span class="value" id="umbrella-needed">NON</span>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">[ VENT SANS DRAMATISATION ]</div>
+                    <div class="data-line">
+                        <span class="label">VITESSE MOYENNE:</span>
+                        <span class="value" id="wind-speed">-- km/h</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">RAFALES MAX:</span>
+                        <span class="value" id="wind-gusts">-- km/h</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">DIRECTION:</span>
+                        <span class="value" id="wind-direction">--</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">CLASSIFICATION:</span>
+                        <span class="value" id="wind-class">BRISE LEGERE</span>
+                    </div>
+                    <div class="data-line">
+                        <span class="label">DANGEREUX:</span>
+                        <span class="value" id="wind-danger">NON</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <div class="comparison-title">[ COMPARAISON: EUX vs NOUS ]</div>
+                <div class="comparison-grid">
+                    <div class="fake-weather">
+                        <div class="fake-title">📱 APPS METEᲝ CLASSIQUES:</div>
+                        <div id="fake-forecast">
+                            ⚠️ ALERTE METEO EN COURS!<br>
+                            🌧️ Risque d'averses orageuses<br>
+                            ❄️ Températures glaciales ressenties<br>
+                            💨 Vents violents jusqu'à 25 km/h<br>
+                            ⛈️ Situation météorologique dégradée
+                        </div>
+                    </div>
+                    <div class="real-weather">
+                        <div class="real-title">📊 METEO AMIENS FACTUELLE:</div>
+                        <div id="real-forecast">
+                            ✓ 23% de pluie légère possible<br>
+                            ✓ Température normale pour novembre<br>
+                            ✓ Petit vent de 12 km/h (= brise)<br>
+                            ✓ Aucun danger météorologique<br>
+                            ✓ Conditions tout à fait supportables
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-section">
+                <div class="activity-title">[ RECOMMANDATIONS ACTIVITES - DONNEES OBJECTIVES ]</div>
+                <div class="activity-grid">
+                    <div class="activity-item">
+                        <span>VELO/FOOTING:</span>
+                        <span class="status-ok" id="activity-sport">PARFAIT</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>PIQUE-NIQUE:</span>
+                        <span class="status-caution" id="activity-picnic">PREVOIR PULL</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>JARDINAGE:</span>
+                        <span class="status-ok" id="activity-garden">IDEAL</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>ETENDRE LINGE:</span>
+                        <span class="status-ok" id="activity-laundry">SECHERA EN 3H</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>BARBECUE:</span>
+                        <span class="status-ok" id="activity-bbq">GO</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>LAVER VOITURE:</span>
+                        <span class="status-caution" id="activity-car">ATTENDRE 2J</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ascii-art">
+                ┌─────────────────────────────────────────────────────────────┐<br>
+                │  "LA VERITE METEOROLOGIQUE, RIEN QUE LA VERITE"            │<br>
+                │  Station indépendante - Aucune publicité - Aucun sponsor   │<br>
+                └─────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>STATION AUTONOME AMIENS - LAT: 49.9°N LON: 2.3°E</div>
+            <div>DONNEES: OPEN-METEO.COM | ANALYSE: ALGORITHMES LOCAUX</div>
+            <div>PAS DE TRACKING - PAS DE COOKIES - PAS DE BULLSHIT</div>
+        </div>
+    </div>
+
+    <script>
+        // Coordonnées d'Amiens
+        const AMIENS_LAT = 49.9;
+        const AMIENS_LON = 2.3;
+
+        // Classification des vents selon échelle de Beaufort
+        function getWindClassification(speed) {
+            if (speed < 6) return "CALME";
+            if (speed < 12) return "BRISE LEGERE";
+            if (speed < 20) return "BRISE MODEREE";
+            if (speed < 29) return "BONNE BRISE";
+            if (speed < 39) return "VENT FRAIS";
+            if (speed < 50) return "VENT FORT";
+            return "TEMPETE";
+        }
+
+        // Direction du vent en texte
+        function getWindDirection(degrees) {
+            const directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"];
+            const index = Math.round(degrees / 22.5) % 16;
+            return directions[index];
+        }
+
+        // Analyser si la météo est dramatisée
+        function generateFakeForecast(data) {
+            const current = data.current;
+            let fake = [];
+            
+            if (current.precipitation > 0.1) {
+                fake.push("⚠️ ALERTE PLUIE - Risque d'inondations locales");
+            } else if (current.cloud_cover > 50) {
+                fake.push("🌧️ Ciel menaçant - Averses imminentes");
+            }
+            
+            if (current.temperature_2m < 15) {
+                fake.push("❄️ Vague de froid - Températures polaires");
+            } else if (current.temperature_2m > 25) {
+                fake.push("🔥 Canicule dangereuse - Hydratez-vous!");
+            }
+            
+            if (current.wind_speed_10m > 15) {
+                fake.push("💨 Tempête en approche - Vents destructeurs");
+            }
+            
+            if (fake.length === 0) {
+                fake.push("⚠️ Vigilance météo - Conditions instables");
+            }
+            
+            return fake.join("<br>");
+        }
+
+        function generateRealForecast(data) {
+            const current = data.current;
+            let real = [];
+            
+            // Température
+            if (current.temperature_2m < 5) {
+                real.push("✓ Il fait froid (normal en hiver)");
+            } else if (current.temperature_2m > 30) {
+                real.push("✓ Il fait chaud (normal en été)");
+            } else {
+                real.push("✓ Température tout à fait normale");
+            }
+            
+            // Pluie
+            if (current.precipitation > 5) {
+                real.push("✓ Il pleut actuellement");
+            } else {
+                real.push("✓ Pas de pluie significative");
+            }
+            
+            // Vent
+            if (current.wind_speed_10m < 30) {
+                real.push("✓ Vent sans danger");
+            } else {
+                real.push("⚠️ Vent effectivement fort");
+            }
+            
+            real.push("✓ Sortez sans crainte");
+            
+            return real.join("<br>");
+        }
+
+        // Calculer les recommandations d'activités
+        function calculateActivities(data) {
+            const current = data.current;
+            const temp = current.temperature_2m;
+            const rain = current.precipitation;
+            const wind = current.wind_speed_10m;
+            
+            return {
+                sport: rain < 0.1 && wind < 25 ? "PARFAIT" : rain < 1 ? "ACCEPTABLE" : "REPORTER",
+                picnic: temp > 15 && rain < 0.1 ? "IDEAL" : temp > 10 ? "PREVOIR PULL" : "TROP FROID",
+                garden: rain < 0.1 && wind < 20 ? "IDEAL" : "ATTENDRE",
+                laundry: rain < 0.1 && wind > 5 ? "SECHERA EN 3H" : rain < 0.1 ? "SECHERA LENTEMENT" : "REPORTER",
+                bbq: rain < 0.1 && wind < 15 ? "GO" : "REPORTER",
+                car: rain < 0.1 ? "GO" : "ATTENDRE 2J"
+            };
+        }
+
+        async function loadWeatherData() {
+            try {
+                const response = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${AMIENS_LAT}&longitude=${AMIENS_LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Europe%2FParis&forecast_days=1`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Erreur chargement données');
+                }
+
+                const data = await response.json();
+                displayWeatherData(data);
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('weather-content').style.display = 'block';
+                
+                document.getElementById('timestamp').textContent = 
+                    `DERNIERE MAJ: ${new Date().toLocaleString('fr-FR')}`;
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('loading').innerHTML = 
+                    '<span style="color: #ff0000;">ERREUR CONNEXION SATELLITE - RETRY...</span>';
+            }
+        }
+
+        function displayWeatherData(data) {
+            const current = data.current;
+            const daily = data.daily;
+
+            // Température
+            document.getElementById('temp-current').textContent = `${Math.round(current.temperature_2m)}°C`;
+            document.getElementById('temp-feels').textContent = `${Math.round(current.apparent_temperature)}°C`;
+            document.getElementById('temp-minmax').textContent = `${Math.round(daily.temperature_2m_min[0])}°C / ${Math.round(daily.temperature_2m_max[0])}°C`;
+            
+            // Précipitations
+            const rainProb = daily.precipitation_probability_max[0] || 0;
+            document.getElementById('rain-prob').textContent = `${rainProb}%`;
+            document.getElementById('rain-amount').textContent = current.precipitation > 0 ? `${current.precipitation.toFixed(1)} mm` : "< 0.1 mm";
+            document.getElementById('umbrella-needed').textContent = rainProb > 70 ? "OUI" : "NON";
+            
+            // Vent
+            document.getElementById('wind-speed').textContent = `${Math.round(current.wind_speed_10m)} km/h`;
+            document.getElementById('wind-gusts').textContent = `${Math.round(current.wind_gusts_10m)} km/h`;
+            document.getElementById('wind-direction').textContent = getWindDirection(current.wind_direction_10m);
+            document.getElementById('wind-class').textContent = getWindClassification(current.wind_speed_10m);
+            document.getElementById('wind-danger').textContent = current.wind_speed_10m > 50 ? "OUI" : "NON";
+            
+            // Comparaisons
+            document.getElementById('fake-forecast').innerHTML = generateFakeForecast(data);
+            document.getElementById('real-forecast').innerHTML = generateRealForecast(data);
+            
+            // Activités
+            const activities = calculateActivities(data);
+            document.getElementById('activity-sport').textContent = activities.sport;
+            document.getElementById('activity-picnic').textContent = activities.picnic;
+            document.getElementById('activity-garden').textContent = activities.garden;
+            document.getElementById('activity-laundry').textContent = activities.laundry;
+            document.getElementById('activity-bbq').textContent = activities.bbq;
+            document.getElementById('activity-car').textContent = activities.car;
+            
+            // Colorer selon les résultats
+            ['sport', 'picnic', 'garden', 'laundry', 'bbq', 'car'].forEach(activity => {
+                const element = document.getElementById(`activity-${activity}`);
+                const text = element.textContent;
+                if (text.includes('PARFAIT') || text.includes('IDEAL') || text.includes('GO')) {
+                    element.className = 'status-ok';
+                } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') || text.includes('LENTEMENT')) {
+                    element.className = 'status-caution';
+                } else {
+                    element.className = 'status-bad';
+                }
+            });
+        }
+
+        // Charger les données au démarrage
+        loadWeatherData();
+
+        // Actualiser toutes les 10 minutes
+        setInterval(loadWeatherData, 600000);
+    </script>
+</body>
+</html>
