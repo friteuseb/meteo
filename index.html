@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STATION METEO AMIENS - DONNEES BRUTES</title>
+    <title>Météo Amiens - Temps réel</title>
     <style>
         * {
             margin: 0;
@@ -51,15 +51,17 @@
 
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
             margin-bottom: 30px;
         }
 
         .panel {
             border: solid 1px #00ff00;
-            padding: 15px;
+            padding: 20px;
             background: rgba(0, 255, 0, 0.05);
+            display: flex;
+            flex-direction: column;
         }
 
         .panel-title {
@@ -71,9 +73,10 @@
         }
 
         .data-line {
-            margin: 5px 0;
+            margin: 8px 0;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .label {
@@ -152,15 +155,17 @@
 
         .activity-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
         .activity-item {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px dotted #333;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #333;
+            background: rgba(0, 255, 0, 0.02);
         }
 
         .status-ok { color: #00ff00; }
@@ -193,14 +198,18 @@
                 font-size: 12px;
                 padding: 10px;
             }
-            
+
             .main-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .comparison-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
+            }
+
+            .activity-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -208,8 +217,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">═══ STATION METEOROLOGIQUE AMIENS ═══</div>
-            <div class="subtitle">DONNEES BRUTES - SANS MANIPULATION - SANS MENSONGE</div>
+            <div class="title">═══ METEO AMIENS ═══</div>
+            <div class="subtitle">Données en temps réel</div>
             <div class="timestamp" id="timestamp">DERNIERE MAJ: --</div>
         </div>
 
@@ -221,7 +230,7 @@
         <div id="weather-content" style="display: none;">
             <div class="main-grid">
                 <div class="panel">
-                    <div class="panel-title">[ TEMPERATURE REELLE ]</div>
+                    <div class="panel-title">[ TEMPERATURE ]</div>
                     <div class="data-line">
                         <span class="label">ACTUELLE:</span>
                         <span class="value" id="temp-current">--°C</span>
@@ -245,7 +254,7 @@
                 </div>
 
                 <div class="panel">
-                    <div class="panel-title">[ PRECIPITATIONS FACTUELLES ]</div>
+                    <div class="panel-title">[ PRECIPITATIONS ]</div>
                     <div class="data-line">
                         <span class="label">PROBABILITE:</span>
                         <span class="value" id="rain-prob">--%</span>
@@ -269,7 +278,7 @@
                 </div>
 
                 <div class="panel">
-                    <div class="panel-title">[ VENT SANS DRAMATISATION ]</div>
+                    <div class="panel-title">[ VENT ]</div>
                     <div class="data-line">
                         <span class="label">VITESSE MOYENNE:</span>
                         <span class="value" id="wind-speed">-- km/h</span>
@@ -294,7 +303,7 @@
             </div>
 
             <div class="comparison-section">
-                <div class="comparison-title">[ COMPARAISON: EUX vs NOUS ]</div>
+                <div class="comparison-title">[ COMPARAISON ]</div>
                 <div class="comparison-grid">
                     <div class="fake-weather">
                         <div class="fake-title">📱 APPS METEᲝ CLASSIQUES:</div>
@@ -320,7 +329,7 @@
             </div>
 
             <div class="activity-section">
-                <div class="activity-title">[ RECOMMANDATIONS ACTIVITES - DONNEES OBJECTIVES ]</div>
+                <div class="activity-title">[ ACTIVITES CONSEILLEES ]</div>
                 <div class="activity-grid">
                     <div class="activity-item">
                         <span>VELO/FOOTING:</span>
@@ -351,16 +360,15 @@
 
             <div class="ascii-art">
                 ┌─────────────────────────────────────────────────────────────┐<br>
-                │  "LA VERITE METEOROLOGIQUE, RIEN QUE LA VERITE"            │<br>
-                │  Station indépendante - Aucune publicité - Aucun sponsor   │<br>
+                │               Météo locale sans exagération                │<br>
+                │               Données Open-Meteo.com fiables               │<br>
                 └─────────────────────────────────────────────────────────────┘
             </div>
         </div>
 
         <div class="footer">
-            <div>STATION AUTONOME AMIENS - LAT: 49.9°N LON: 2.3°E</div>
-            <div>DONNEES: OPEN-METEO.COM | ANALYSE: ALGORITHMES LOCAUX</div>
-            <div>PAS DE TRACKING - PAS DE COOKIES - PAS DE BULLSHIT</div>
+            <div>Station Amiens - Coordonnées: 49.9°N, 2.3°E</div>
+            <div>Source: Open-Meteo.com | Mise à jour: 10 minutes</div>
         </div>
     </div>
 
