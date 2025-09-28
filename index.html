@@ -113,16 +113,10 @@
             text-align: center;
         }
 
-        .ascii-weather {
-            font-size: 1em;
-            line-height: 1;
-            color: #00ff00;
+        .weather-icon {
+            font-size: 4em;
+            line-height: 1.2;
             margin: 20px auto;
-            white-space: pre;
-            font-family: 'Roboto Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', monospace;
-            letter-spacing: -0.5px;
-            font-variant-numeric: tabular-nums;
-            font-weight: 400;
             text-align: center;
         }
 
@@ -357,10 +351,9 @@
         <div id="weather-content" style="display: none;">
             <div class="weather-visual">
                 <div class="visual-title">[ CONDITIONS ACTUELLES ]</div>
-                <div class="ascii-weather" id="ascii-weather">
-                    <!-- ASCII art sera inséré ici par JavaScript -->
+                <div class="weather-icon" id="weather-icon">
+                    <!-- Emoji météo sera inséré ici par JavaScript -->
                 </div>
-                <button id="toggle-display" onclick="toggleWeatherDisplay()" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; margin: 10px 0; cursor: pointer; font-family: inherit; font-size: 12px;">ASCII ⇄ EMOJI</button>
                 <div class="weather-description" id="weather-description">
                     <!-- Description sera insérée ici -->
                 </div>
@@ -530,10 +523,10 @@
             </div>
 
             <div class="ascii-art">
-                ┌─────────────────────────────────────────────────────────────┐<br>
-                │               Météo locale sans exagération                │<br>
-                │               Données Open-Meteo.com fiables               │<br>
-                └─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│               Météo locale sans exagération                │
+│               Données Open-Meteo.com fiables               │
+└─────────────────────────────────────────────────────────────┘
             </div>
         </div>
 
@@ -548,72 +541,6 @@
         const AMIENS_LAT = 49.9;
         const AMIENS_LON = 2.3;
 
-        // Dessins ASCII pour chaque condition météo (version simplifiée et robuste)
-        const weatherAsciiArt = {
-            sunny: `
-    *   *   *
-      * * *
-   *  --|--  *
-      * o *
-    *   *   *`,
-
-            partlyCloudy: `
-      *  *
-   *  ooo  *
-     ooooo
-    ooooooo`,
-
-            cloudy: `
-     ooooo
-   ooooooooo
-  ooooooooooo
-   ooooooooo`,
-
-            rainy: `
-     ooooo
-   ooooooooo
-  | | | | |
- | | | | | |`,
-
-            heavyRain: `
-     ooooo
-   ooooooooo
-  ||| ||| |||
- ||| ||| |||`,
-
-            stormy: `
-     ooooo
-   ooooooooo
-    *  *  *
-  | * | * |`,
-
-            snowy: `
-     ooooo
-   ooooooooo
-   * . * . *
-  . * . * .`,
-
-            foggy: `
-  - - - - - -
- - - - - - - -
-- - - - - - - -
- - - - - - - -
-  - - - - - -`,
-
-            windy: `
- ~~~~~~
-~~~~~~
- ~~~~~~
-~~~~~~
- ~~~~~~`,
-
-            night: `
-      ooo
-     o   o
-      ooo
- *     *     *
-   *  *  *`
-        };
 
         // Classification des vents selon échelle de Beaufort
         function getWindClassification(speed) {
@@ -633,23 +560,8 @@
             return directions[index];
         }
 
-        // Émojis de fallback Unicode
-        const weatherEmojis = {
-            sunny: "☀️",
-            partlyCloudy: "⛅",
-            cloudy: "☁️",
-            rainy: "🌧️",
-            heavyRain: "🌦️",
-            stormy: "⛈️",
-            snowy: "❄️",
-            foggy: "🌫️",
-            windy: "💨",
-            night: "🌙"
-        };
-
-        // Déterminer l'ASCII art et la description selon le code météo
+        // Déterminer l'emoji et la description selon le code météo
         function getWeatherVisualization(weatherCode, isDay, precipitation, cloudCover, windSpeed) {
-            let art = "";
             let emoji = "";
             let description = "";
 
@@ -665,16 +577,14 @@
             // 96, 99: Thunderstorm with slight and heavy hail
 
             if (!isDay) {
-                art = weatherAsciiArt.night;
-                emoji = weatherEmojis.night;
+                emoji = "🌙";
                 description = "NUIT ";
             }
 
             switch(weatherCode) {
                 case 0:
                     if (isDay) {
-                        art = weatherAsciiArt.sunny;
-                        emoji = weatherEmojis.sunny;
+                        emoji = "☀️";
                         description = "ENSOLEILLE";
                     } else {
                         description += "CLAIRE";
@@ -683,85 +593,72 @@
                 case 1:
                 case 2:
                     if (isDay) {
-                        art = weatherAsciiArt.partlyCloudy;
-                        emoji = weatherEmojis.partlyCloudy;
+                        emoji = "🌤️";
                         description = "PARTIELLEMENT NUAGEUX";
                     } else {
                         description += "PARTIELLEMENT NUAGEUSE";
                     }
                     break;
                 case 3:
-                    art = weatherAsciiArt.cloudy;
-                    emoji = weatherEmojis.cloudy;
+                    emoji = "☁️";
                     description = isDay ? "NUAGEUX" : description + "NUAGEUSE";
                     break;
                 case 45:
                 case 48:
-                    art = weatherAsciiArt.foggy;
-                    emoji = weatherEmojis.foggy;
+                    emoji = "🌫️";
                     description = "BROUILLARD";
                     break;
                 case 51:
                 case 53:
                 case 55:
-                    art = weatherAsciiArt.rainy;
-                    emoji = weatherEmojis.rainy;
+                    emoji = "🌦️";
                     description = "BRUINE";
                     break;
                 case 61:
                 case 63:
                 case 65:
-                    art = weatherAsciiArt.rainy;
-                    emoji = weatherEmojis.rainy;
+                    emoji = "🌧️";
                     description = weatherCode === 65 ? "FORTE PLUIE" : "PLUIE";
                     break;
                 case 71:
                 case 73:
                 case 75:
-                    art = weatherAsciiArt.snowy;
-                    emoji = weatherEmojis.snowy;
+                    emoji = "🌨️";
                     description = "NEIGE";
                     break;
                 case 80:
                 case 81:
                 case 82:
-                    art = weatherAsciiArt.heavyRain;
-                    emoji = weatherEmojis.heavyRain;
+                    emoji = "🌦️";
                     description = "AVERSES";
                     break;
                 case 95:
                 case 96:
                 case 99:
-                    art = weatherAsciiArt.stormy;
-                    emoji = weatherEmojis.stormy;
+                    emoji = "⛈️";
                     description = "ORAGE";
                     break;
                 default:
                     // Fallback basé sur d'autres paramètres
                     if (precipitation > 0.5) {
-                        art = weatherAsciiArt.rainy;
-                        emoji = weatherEmojis.rainy;
+                        emoji = "🌧️";
                         description = "PLUVIEUX";
                     } else if (cloudCover > 70) {
-                        art = weatherAsciiArt.cloudy;
-                        emoji = weatherEmojis.cloudy;
+                        emoji = "☁️";
                         description = "TRES NUAGEUX";
                     } else if (cloudCover > 30) {
-                        art = weatherAsciiArt.partlyCloudy;
-                        emoji = weatherEmojis.partlyCloudy;
+                        emoji = "⛅";
                         description = "PARTIELLEMENT NUAGEUX";
                     } else if (windSpeed > 30) {
-                        art = weatherAsciiArt.windy;
-                        emoji = weatherEmojis.windy;
+                        emoji = "💨";
                         description = "VENTEUX";
                     } else {
-                        art = isDay ? weatherAsciiArt.sunny : weatherAsciiArt.night;
-                        emoji = isDay ? weatherEmojis.sunny : weatherEmojis.night;
+                        emoji = isDay ? "☀️" : "🌙";
                         description = isDay ? "CLAIR" : "NUIT CLAIRE";
                     }
             }
 
-            return { art, emoji, description };
+            return { emoji, description };
         }
 
         // Afficher les alertes météo
@@ -1064,7 +961,7 @@
                 current.cloud_cover,
                 current.wind_speed_10m
             );
-            updateWeatherDisplay(visualization);
+            document.getElementById('weather-icon').textContent = visualization.emoji;
             document.getElementById('weather-description').textContent = visualization.description;
 
             // Alertes météo
@@ -1101,33 +998,6 @@
             });
         }
 
-        // Variables globales pour l'affichage
-        let useAscii = true;
-        let currentVisualization = null;
-
-        // Basculer entre ASCII et emoji
-        function toggleWeatherDisplay() {
-            useAscii = !useAscii;
-            if (currentVisualization) {
-                updateWeatherDisplay(currentVisualization);
-            }
-        }
-
-        // Mettre à jour l'affichage météo
-        function updateWeatherDisplay(visualization) {
-            currentVisualization = visualization;
-            const weatherElement = document.getElementById('ascii-weather');
-
-            if (useAscii) {
-                weatherElement.textContent = visualization.art;
-                weatherElement.style.fontSize = '1em';
-                weatherElement.style.lineHeight = '1';
-            } else {
-                weatherElement.textContent = visualization.emoji;
-                weatherElement.style.fontSize = '4em';
-                weatherElement.style.lineHeight = '1.2';
-            }
-        }
 
         // Charger les données au démarrage
         loadWeatherData();
