@@ -479,7 +479,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">═══ METEO <span id="city-name">AMIENS</span> ═══
+            <div class="title">═══ METEO DU BON SENS ═══
                 <div class="city-selector">
                     <input type="text" class="city-input" id="city-input" placeholder="Changer de ville...">
                     <div class="city-suggestions" id="city-suggestions"></div>
@@ -1374,9 +1374,12 @@
             };
 
             // Mettre à jour l'interface
-            document.getElementById('city-name').textContent = currentCity.name;
             document.getElementById('city-input').value = '';
             document.getElementById('city-suggestions').style.display = 'none';
+
+            // Mettre à jour le footer avec la nouvelle ville
+            document.getElementById('footer-city').textContent = currentCity.name;
+            document.getElementById('footer-coords').textContent = `${currentCity.lat.toFixed(1)}°N, ${currentCity.lon.toFixed(1)}°E`;
 
             // Sauvegarder la préférence
             localStorage.setItem('preferred_city', JSON.stringify(currentCity));
@@ -1621,7 +1624,6 @@
             const preferredCity = localStorage.getItem('preferred_city');
             if (preferredCity) {
                 currentCity = JSON.parse(preferredCity);
-                document.getElementById('city-name').textContent = currentCity.name;
                 document.getElementById('footer-city').textContent = currentCity.name;
                 document.getElementById('footer-coords').textContent = `${currentCity.lat.toFixed(1)}°N, ${currentCity.lon.toFixed(1)}°E`;
             }
