@@ -684,6 +684,14 @@
                         <span class="status-ok" id="activity-drying">PARFAIT</span>
                     </div>
                     <div class="activity-item">
+                        <span>RANDONNEE:</span>
+                        <span class="status-ok" id="activity-hiking">IDEAL</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>BIVOUAC:</span>
+                        <span class="status-caution" id="activity-camping">PREVOIR CHAUD</span>
+                    </div>
+                    <div class="activity-item">
                         <span>LAVER VOITURE:</span>
                         <span class="status-caution" id="activity-car">ATTENDRE 2J</span>
                     </div>
@@ -1181,6 +1189,36 @@
                 schoolOutfit += " + IMPER";
             }
 
+            // Logique pour randonnée
+            let hiking = "";
+            const visibility = current.visibility || 10000;
+            if (rain < 0.1 && wind < 20 && temp >= 10 && temp <= 25 && visibility > 5000 && uvIndex < 8) {
+                hiking = "IDEAL";
+            } else if (rain < 1 && wind < 30 && temp >= 5 && temp <= 30 && visibility > 2000) {
+                hiking = "ACCEPTABLE";
+            } else if (rain > 5 || wind > 40 || temp < 0 || temp > 35 || visibility < 1000) {
+                hiking = "DANGEREUX";
+            } else {
+                hiking = "DIFFICILE";
+            }
+
+            // Logique pour bivouac (plus exigeant)
+            let camping = "";
+            const minNightTemp = daily.temperature_2m_min[0];
+            const rainProb = daily.precipitation_probability_max[0] || 0;
+
+            if (rain < 0.1 && wind < 15 && temp >= 15 && minNightTemp >= 8 && rainProb < 20) {
+                camping = "PARFAIT";
+            } else if (rain < 0.5 && wind < 25 && minNightTemp >= 5 && rainProb < 40) {
+                camping = "PREVOIR CHAUD";
+            } else if (minNightTemp < 0) {
+                camping = "GEL - EQUIPEMENT HIVER";
+            } else if (rain > 2 || wind > 35 || rainProb > 70) {
+                camping = "REPORTER";
+            } else {
+                camping = "CONDITIONS DIFFICILES";
+            }
+
             return {
                 school: schoolOutfit,
                 sport: rain < 0.1 && wind < 25 && uvIndex < 8 ? "PARFAIT" : rain < 1 ? "ACCEPTABLE" : "REPORTER",
@@ -1189,7 +1227,9 @@
                 bbq: rain < 0.1 && wind < 15 ? "GO" : "REPORTER",
                 car: rain < 0.1 ? "GO" : "ATTENDRE 2J",
                 watering: rain > 2 ? "INUTILE" : temp > 25 || humidity < 40 ? "URGENT" : "OPTIONNEL",
-                drying: rain < 0.1 && wind > 10 && humidity < 60 ? "PARFAIT" : rain < 0.1 ? "LENT" : "IMPOSSIBLE"
+                drying: rain < 0.1 && wind > 10 && humidity < 60 ? "PARFAIT" : rain < 0.1 ? "LENT" : "IMPOSSIBLE",
+                hiking: hiking,
+                camping: camping
             };
         }
 
@@ -1512,6 +1552,8 @@
             document.getElementById('activity-car').textContent = activities.car;
             document.getElementById('activity-watering').textContent = activities.watering;
             document.getElementById('activity-drying').textContent = activities.drying;
+            document.getElementById('activity-hiking').textContent = activities.hiking;
+            document.getElementById('activity-camping').textContent = activities.camping;
 
             // Colorer les éléments d'humidité
             const humidityElements = [
@@ -1540,19 +1582,19 @@
             });
 
             // Colorer selon les résultats des activités
-            ['school', 'sport', 'picnic', 'garden', 'bbq', 'car', 'watering', 'drying'].forEach(activity => {
+            ['school', 'sport', 'picnic', 'garden', 'bbq', 'car', 'watering', 'drying', 'hiking', 'camping'].forEach(activity => {
                 const element = document.getElementById(`activity-${activity}`);
                 if (element) {
                     const text = element.textContent;
                     if (text.includes('PARFAIT') || text.includes('IDEAL') || text.includes('GO') ||
                         text.includes('T-SHIRT') || text.includes('INUTILE')) {
                         element.className = 'status-ok';
-                    } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') ||
+                    } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') || text.includes('DIFFICILE') ||
                                text.includes('OPTIONNEL') || text.includes('GILET') || text.includes('VESTE') ||
-                               text.includes('ACCEPTABLE')) {
+                               text.includes('ACCEPTABLE') || text.includes('CONDITIONS')) {
                         element.className = 'status-caution';
-                    } else if (text.includes('MANTEAU') || text.includes('REPORTER') ||
-                               text.includes('IMPOSSIBLE') || text.includes('URGENT')) {
+                    } else if (text.includes('MANTEAU') || text.includes('REPORTER') || text.includes('DANGEREUX') ||
+                               text.includes('IMPOSSIBLE') || text.includes('URGENT') || text.includes('GEL')) {
                         element.className = 'status-bad';
                     }
                 }
