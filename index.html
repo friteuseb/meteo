@@ -568,8 +568,12 @@
             </div>
 
             <div class="activity-section">
-                <div class="activity-title">[ ACTIVITES CONSEILLEES ]</div>
+                <div class="activity-title">[ CONSEILS DU JOUR ]</div>
                 <div class="activity-grid">
+                    <div class="activity-item">
+                        <span>TENUE ECOLE:</span>
+                        <span class="status-ok" id="activity-school">T-SHIRT</span>
+                    </div>
                     <div class="activity-item">
                         <span>VELO/FOOTING:</span>
                         <span class="status-ok" id="activity-sport">PARFAIT</span>
@@ -579,24 +583,12 @@
                         <span class="status-caution" id="activity-picnic">PREVOIR PULL</span>
                     </div>
                     <div class="activity-item">
-                        <span>JARDINAGE:</span>
-                        <span class="status-ok" id="activity-garden">IDEAL</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>ETENDRE LINGE:</span>
-                        <span class="status-ok" id="activity-laundry">SECHERA EN 3H</span>
-                    </div>
-                    <div class="activity-item">
                         <span>BARBECUE:</span>
                         <span class="status-ok" id="activity-bbq">GO</span>
                     </div>
                     <div class="activity-item">
-                        <span>LAVER VOITURE:</span>
-                        <span class="status-caution" id="activity-car">ATTENDRE 2J</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>AERER MAISON:</span>
-                        <span class="status-ok" id="activity-ventilate">OUI</span>
+                        <span>JARDINAGE:</span>
+                        <span class="status-ok" id="activity-garden">IDEAL</span>
                     </div>
                     <div class="activity-item">
                         <span>ARROSER JARDIN:</span>
@@ -605,6 +597,14 @@
                     <div class="activity-item">
                         <span>SECHER LINGE DEHORS:</span>
                         <span class="status-ok" id="activity-drying">PARFAIT</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>SECHOIR INTERIEUR:</span>
+                        <span class="status-ok" id="activity-indoor-drying">DEHORS MIEUX</span>
+                    </div>
+                    <div class="activity-item">
+                        <span>LAVER VOITURE:</span>
+                        <span class="status-caution" id="activity-car">ATTENDRE 2J</span>
                     </div>
                 </div>
             </div>
@@ -1029,16 +1029,44 @@
             const humidity = current.relative_humidity_2m;
             const uvIndex = current.uv_index || 0;
 
+            // Logique pour la tenue école
+            let schoolOutfit = "";
+            if (temp < 5) {
+                schoolOutfit = "MANTEAU + ECHARPE";
+            } else if (temp < 10) {
+                schoolOutfit = "MANTEAU";
+            } else if (temp < 15) {
+                schoolOutfit = "VESTE CHAUDE";
+            } else if (temp < 20) {
+                schoolOutfit = "GILET/PULL LEGER";
+            } else {
+                schoolOutfit = "T-SHIRT SUFFISANT";
+            }
+            // Ajouter info pluie si nécessaire
+            if (rain > 0.5 || daily.precipitation_probability_max[0] > 50) {
+                schoolOutfit += " + IMPER";
+            }
+
+            // Logique pour séchoir intérieur
+            let indoorDrying = "";
+            if (rain > 0.1 || humidity > 80) {
+                indoorDrying = "NECESSAIRE";
+            } else if (temp < 10) {
+                indoorDrying = "RECOMMANDE";
+            } else {
+                indoorDrying = "DEHORS MIEUX";
+            }
+
             return {
+                school: schoolOutfit,
                 sport: rain < 0.1 && wind < 25 && uvIndex < 8 ? "PARFAIT" : rain < 1 ? "ACCEPTABLE" : "REPORTER",
                 picnic: temp > 15 && rain < 0.1 && uvIndex < 6 ? "IDEAL" : temp > 10 ? "PREVOIR PULL" : "TROP FROID",
                 garden: rain < 0.1 && wind < 20 && temp > 5 ? "IDEAL" : "ATTENDRE",
-                laundry: rain < 0.1 && wind > 5 ? "SECHERA EN 3H" : rain < 0.1 ? "SECHERA LENTEMENT" : "REPORTER",
                 bbq: rain < 0.1 && wind < 15 ? "GO" : "REPORTER",
                 car: rain < 0.1 ? "GO" : "ATTENDRE 2J",
-                ventilate: temp > 20 || humidity > 70 ? "OUI - RAFRAICHIR" : temp < 10 ? "NON - TROP FROID" : "OPTIONNEL",
                 watering: rain > 2 ? "INUTILE" : temp > 25 || humidity < 40 ? "URGENT" : "OPTIONNEL",
-                drying: rain < 0.1 && wind > 10 && humidity < 60 ? "PARFAIT" : rain < 0.1 ? "LENT" : "IMPOSSIBLE"
+                drying: rain < 0.1 && wind > 10 && humidity < 60 ? "PARFAIT" : rain < 0.1 ? "LENT" : "IMPOSSIBLE",
+                indoorDrying: indoorDrying
             };
         }
 
@@ -1203,28 +1231,34 @@
                 displayWeeklyForecast(data.daily);
             }
 
-            // Activités
+            // Activités et conseils
             const activities = calculateActivities(data);
+            document.getElementById('activity-school').textContent = activities.school;
             document.getElementById('activity-sport').textContent = activities.sport;
             document.getElementById('activity-picnic').textContent = activities.picnic;
             document.getElementById('activity-garden').textContent = activities.garden;
-            document.getElementById('activity-laundry').textContent = activities.laundry;
             document.getElementById('activity-bbq').textContent = activities.bbq;
             document.getElementById('activity-car').textContent = activities.car;
-            document.getElementById('activity-ventilate').textContent = activities.ventilate;
             document.getElementById('activity-watering').textContent = activities.watering;
             document.getElementById('activity-drying').textContent = activities.drying;
+            document.getElementById('activity-indoor-drying').textContent = activities.indoorDrying;
 
             // Colorer selon les résultats
-            ['sport', 'picnic', 'garden', 'laundry', 'bbq', 'car', 'ventilate', 'watering', 'drying'].forEach(activity => {
+            ['school', 'sport', 'picnic', 'garden', 'bbq', 'car', 'watering', 'drying', 'indoor-drying'].forEach(activity => {
                 const element = document.getElementById(`activity-${activity}`);
-                const text = element.textContent;
-                if (text.includes('PARFAIT') || text.includes('IDEAL') || text.includes('GO') || text.includes('OUI') && !text.includes('NON')) {
-                    element.className = 'status-ok';
-                } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') || text.includes('LENTEMENT') || text.includes('OPTIONNEL') || text.includes('LENT') || text.includes('URGENT')) {
-                    element.className = 'status-caution';
-                } else {
-                    element.className = 'status-bad';
+                if (element) {
+                    const text = element.textContent;
+                    if (text.includes('PARFAIT') || text.includes('IDEAL') || text.includes('GO') ||
+                        text.includes('T-SHIRT') || text.includes('DEHORS MIEUX') || text.includes('INUTILE')) {
+                        element.className = 'status-ok';
+                    } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') || text.includes('LENT') ||
+                               text.includes('OPTIONNEL') || text.includes('GILET') || text.includes('VESTE') ||
+                               text.includes('RECOMMANDE') || text.includes('ACCEPTABLE')) {
+                        element.className = 'status-caution';
+                    } else if (text.includes('MANTEAU') || text.includes('NECESSAIRE') || text.includes('REPORTER') ||
+                               text.includes('IMPOSSIBLE') || text.includes('URGENT')) {
+                        element.className = 'status-bad';
+                    }
                 }
             });
         }
