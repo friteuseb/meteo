@@ -1090,14 +1090,14 @@
                 schoolOutfit += " + IMPER";
             }
 
-            // Logique pour séchoir intérieur
+            // Logique pour séchoir intérieur avec temps de séchage
             let indoorDrying = "";
             if (rain > 0.1 || humidity > 80) {
-                indoorDrying = "NECESSAIRE";
+                indoorDrying = "LENT (12H+)";
             } else if (temp < 10) {
-                indoorDrying = "RECOMMANDE";
+                indoorDrying = "NORMAL (6-8H)";
             } else {
-                indoorDrying = "DEHORS MIEUX";
+                indoorDrying = "RAPIDE (3-4H)";
             }
 
             return {
@@ -1292,13 +1292,13 @@
                 if (element) {
                     const text = element.textContent;
                     if (text.includes('PARFAIT') || text.includes('IDEAL') || text.includes('GO') ||
-                        text.includes('T-SHIRT') || text.includes('DEHORS MIEUX') || text.includes('INUTILE')) {
+                        text.includes('T-SHIRT') || text.includes('RAPIDE') || text.includes('INUTILE')) {
                         element.className = 'status-ok';
-                    } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') || text.includes('LENT') ||
+                    } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') || text.includes('NORMAL') ||
                                text.includes('OPTIONNEL') || text.includes('GILET') || text.includes('VESTE') ||
-                               text.includes('RECOMMANDE') || text.includes('ACCEPTABLE')) {
+                               text.includes('ACCEPTABLE')) {
                         element.className = 'status-caution';
-                    } else if (text.includes('MANTEAU') || text.includes('NECESSAIRE') || text.includes('REPORTER') ||
+                    } else if (text.includes('MANTEAU') || text.includes('LENT') || text.includes('REPORTER') ||
                                text.includes('IMPOSSIBLE') || text.includes('URGENT')) {
                         element.className = 'status-bad';
                     }
