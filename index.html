@@ -485,6 +485,7 @@
                     <div class="city-suggestions" id="city-suggestions"></div>
                 </div>
             </div>
+            <div class="city-display" id="city-display" style="color: #ffff00; font-size: 12px; margin: 5px 0; text-align: center;">Ville: AMIENS</div>
             <div class="subtitle">Données en temps réel</div>
             <div class="timestamp" id="timestamp">DERNIERE MAJ: --</div>
             <button onclick="loadWeatherData(true)" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; margin-top: 10px; cursor: pointer; font-family: inherit; font-size: 11px;">↻ RAFRAICHIR</button>
@@ -1377,6 +1378,9 @@
             document.getElementById('city-input').value = '';
             document.getElementById('city-suggestions').style.display = 'none';
 
+            // Mettre à jour l'affichage de la ville sous le titre
+            document.getElementById('city-display').textContent = `Ville: ${currentCity.name}`;
+
             // Mettre à jour le footer avec la nouvelle ville
             document.getElementById('footer-city').textContent = currentCity.name;
             document.getElementById('footer-coords').textContent = `${currentCity.lat.toFixed(1)}°N, ${currentCity.lon.toFixed(1)}°E`;
@@ -1624,6 +1628,7 @@
             const preferredCity = localStorage.getItem('preferred_city');
             if (preferredCity) {
                 currentCity = JSON.parse(preferredCity);
+                document.getElementById('city-display').textContent = `Ville: ${currentCity.name}`;
                 document.getElementById('footer-city').textContent = currentCity.name;
                 document.getElementById('footer-coords').textContent = `${currentCity.lat.toFixed(1)}°N, ${currentCity.lon.toFixed(1)}°E`;
             }
