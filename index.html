@@ -1029,19 +1029,62 @@
             const humidity = current.relative_humidity_2m;
             const uvIndex = current.uv_index || 0;
 
-            // Logique pour la tenue école
+            // Logique améliorée pour la tenue école
             let schoolOutfit = "";
-            if (temp < 5) {
+
+            // Utiliser les données horaires pour calculer temp matin et max journée scolaire
+            const hourly = data.hourly;
+            const now = new Date();
+            const currentHour = now.getHours();
+
+            // Trouver température du matin (8h-9h) ou actuelle si après 9h
+            let morningTemp = temp;
+            if (hourly && hourly.time && hourly.temperature_2m) {
+                const todayMorning = hourly.time.findIndex(time => {
+                    const hour = new Date(time).getHours();
+                    return hour === 8 || hour === 9;
+                });
+                if (todayMorning !== -1) {
+                    morningTemp = hourly.temperature_2m[todayMorning];
+                }
+            }
+
+            // Max température pendant les heures scolaires (9h-17h)
+            let schoolMaxTemp = daily.temperature_2m_max[0];
+            if (hourly && hourly.time && hourly.temperature_2m) {
+                const schoolHours = [];
+                hourly.time.forEach((time, index) => {
+                    const hour = new Date(time).getHours();
+                    const day = new Date(time).getDate();
+                    const today = now.getDate();
+                    if (day === today && hour >= 9 && hour <= 17) {
+                        schoolHours.push(hourly.temperature_2m[index]);
+                    }
+                });
+                if (schoolHours.length > 0) {
+                    schoolMaxTemp = Math.max(...schoolHours);
+                }
+            }
+
+            // Nouvelle logique basée sur matin ET après-midi
+            const tempDiff = schoolMaxTemp - morningTemp;
+
+            if (morningTemp < 5) {
                 schoolOutfit = "MANTEAU + ECHARPE";
-            } else if (temp < 10) {
-                schoolOutfit = "MANTEAU";
-            } else if (temp < 15) {
+            } else if (morningTemp < 10 && schoolMaxTemp > 18) {
+                schoolOutfit = "VESTE + T-SHIRT (enlever midi)";
+            } else if (morningTemp < 10) {
                 schoolOutfit = "VESTE CHAUDE";
-            } else if (temp < 20) {
+            } else if (morningTemp >= 10 && morningTemp < 15 && schoolMaxTemp > 20) {
+                schoolOutfit = "GILET LEGER (enlever midi)";
+            } else if (morningTemp < 15) {
                 schoolOutfit = "GILET/PULL LEGER";
+            } else if (schoolMaxTemp > 25) {
+                schoolOutfit = "T-SHIRT + CASQUETTE";
             } else {
                 schoolOutfit = "T-SHIRT SUFFISANT";
             }
+
             // Ajouter info pluie si nécessaire
             if (rain > 0.5 || daily.precipitation_probability_max[0] > 50) {
                 schoolOutfit += " + IMPER";
