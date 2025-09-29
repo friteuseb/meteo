@@ -567,6 +567,34 @@
                 </div>
             </div>
 
+            <div class="panel" style="margin: 30px auto; max-width: 600px;">
+                <div class="panel-title">[ HUMIDITE & CONFORT ]</div>
+                <div class="data-line">
+                    <span class="label">HUMIDITE:</span>
+                    <span class="value" id="humidity-current">--%</span>
+                </div>
+                <div class="data-line">
+                    <span class="label">SENSATION:</span>
+                    <span class="value" id="humidity-comfort">--</span>
+                </div>
+                <div class="data-line">
+                    <span class="label">SECHOIR INTERIEUR:</span>
+                    <span class="value" id="humidity-indoor-drying">--</span>
+                </div>
+                <div class="data-line">
+                    <span class="label">AERER MAISON:</span>
+                    <span class="value" id="humidity-ventilate">--</span>
+                </div>
+                <div class="data-line">
+                    <span class="label">POINT DE ROSEE:</span>
+                    <span class="value" id="dew-point">--°C</span>
+                </div>
+                <div class="data-line">
+                    <span class="label">RISQUE BROUILLARD:</span>
+                    <span class="value" id="fog-risk">--</span>
+                </div>
+            </div>
+
             <div class="activity-section">
                 <div class="activity-title">[ CONSEILS DU JOUR ]</div>
                 <div class="activity-grid">
@@ -597,10 +625,6 @@
                     <div class="activity-item">
                         <span>SECHER LINGE DEHORS:</span>
                         <span class="status-ok" id="activity-drying">PARFAIT</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>SECHOIR INTERIEUR:</span>
-                        <span class="status-ok" id="activity-indoor-drying">DEHORS MIEUX</span>
                     </div>
                     <div class="activity-item">
                         <span>LAVER VOITURE:</span>
@@ -1090,7 +1114,40 @@
                 schoolOutfit += " + IMPER";
             }
 
-            // Logique pour séchoir intérieur avec temps de séchage
+            return {
+                school: schoolOutfit,
+                sport: rain < 0.1 && wind < 25 && uvIndex < 8 ? "PARFAIT" : rain < 1 ? "ACCEPTABLE" : "REPORTER",
+                picnic: temp > 15 && rain < 0.1 && uvIndex < 6 ? "IDEAL" : temp > 10 ? "PREVOIR PULL" : "TROP FROID",
+                garden: rain < 0.1 && wind < 20 && temp > 5 ? "IDEAL" : "ATTENDRE",
+                bbq: rain < 0.1 && wind < 15 ? "GO" : "REPORTER",
+                car: rain < 0.1 ? "GO" : "ATTENDRE 2J",
+                watering: rain > 2 ? "INUTILE" : temp > 25 || humidity < 40 ? "URGENT" : "OPTIONNEL",
+                drying: rain < 0.1 && wind > 10 && humidity < 60 ? "PARFAIT" : rain < 0.1 ? "LENT" : "IMPOSSIBLE"
+            };
+        }
+
+        // Calculer les données d'humidité et de confort
+        function calculateHumidityData(data) {
+            const current = data.current;
+            const temp = current.temperature_2m;
+            const humidity = current.relative_humidity_2m;
+            const rain = current.precipitation;
+
+            // Sensation d'humidité
+            let comfort = "";
+            if (humidity < 30) {
+                comfort = "TRES SEC";
+            } else if (humidity < 40) {
+                comfort = "SEC";
+            } else if (humidity < 60) {
+                comfort = "IDEAL";
+            } else if (humidity < 70) {
+                comfort = "HUMIDE";
+            } else {
+                comfort = "TRES HUMIDE";
+            }
+
+            // Séchoir intérieur avec temps de séchage
             let indoorDrying = "";
             if (rain > 0.1 || humidity > 80) {
                 indoorDrying = "LENT (12H+)";
@@ -1100,16 +1157,39 @@
                 indoorDrying = "RAPIDE (3-4H)";
             }
 
+            // Aération maison
+            let ventilate = "";
+            if (humidity > 70) {
+                ventilate = "URGENT - DESHUMIDIFIER";
+            } else if (temp > 20 || humidity > 60) {
+                ventilate = "RECOMMANDE";
+            } else if (temp < 10) {
+                ventilate = "NON - TROP FROID";
+            } else {
+                ventilate = "OPTIONNEL";
+            }
+
+            // Point de rosée (approximation)
+            const dewPoint = temp - ((100 - humidity) / 5);
+
+            // Risque de brouillard
+            let fogRisk = "";
+            const tempDewDiff = temp - dewPoint;
+            if (tempDewDiff < 2) {
+                fogRisk = "ELEVE";
+            } else if (tempDewDiff < 5) {
+                fogRisk = "MOYEN";
+            } else {
+                fogRisk = "FAIBLE";
+            }
+
             return {
-                school: schoolOutfit,
-                sport: rain < 0.1 && wind < 25 && uvIndex < 8 ? "PARFAIT" : rain < 1 ? "ACCEPTABLE" : "REPORTER",
-                picnic: temp > 15 && rain < 0.1 && uvIndex < 6 ? "IDEAL" : temp > 10 ? "PREVOIR PULL" : "TROP FROID",
-                garden: rain < 0.1 && wind < 20 && temp > 5 ? "IDEAL" : "ATTENDRE",
-                bbq: rain < 0.1 && wind < 15 ? "GO" : "REPORTER",
-                car: rain < 0.1 ? "GO" : "ATTENDRE 2J",
-                watering: rain > 2 ? "INUTILE" : temp > 25 || humidity < 40 ? "URGENT" : "OPTIONNEL",
-                drying: rain < 0.1 && wind > 10 && humidity < 60 ? "PARFAIT" : rain < 0.1 ? "LENT" : "IMPOSSIBLE",
-                indoorDrying: indoorDrying
+                humidity: Math.round(humidity),
+                comfort: comfort,
+                indoorDrying: indoorDrying,
+                ventilate: ventilate,
+                dewPoint: Math.round(dewPoint * 10) / 10,
+                fogRisk: fogRisk
             };
         }
 
@@ -1274,6 +1354,15 @@
                 displayWeeklyForecast(data.daily);
             }
 
+            // Données d'humidité et de confort
+            const humidityData = calculateHumidityData(data);
+            document.getElementById('humidity-current').textContent = `${humidityData.humidity}%`;
+            document.getElementById('humidity-comfort').textContent = humidityData.comfort;
+            document.getElementById('humidity-indoor-drying').textContent = humidityData.indoorDrying;
+            document.getElementById('humidity-ventilate').textContent = humidityData.ventilate;
+            document.getElementById('dew-point').textContent = `${humidityData.dewPoint}°C`;
+            document.getElementById('fog-risk').textContent = humidityData.fogRisk;
+
             // Activités et conseils
             const activities = calculateActivities(data);
             document.getElementById('activity-school').textContent = activities.school;
@@ -1284,21 +1373,46 @@
             document.getElementById('activity-car').textContent = activities.car;
             document.getElementById('activity-watering').textContent = activities.watering;
             document.getElementById('activity-drying').textContent = activities.drying;
-            document.getElementById('activity-indoor-drying').textContent = activities.indoorDrying;
 
-            // Colorer selon les résultats
-            ['school', 'sport', 'picnic', 'garden', 'bbq', 'car', 'watering', 'drying', 'indoor-drying'].forEach(activity => {
+            // Colorer les éléments d'humidité
+            const humidityElements = [
+                { id: 'humidity-comfort', value: humidityData.comfort },
+                { id: 'humidity-indoor-drying', value: humidityData.indoorDrying },
+                { id: 'humidity-ventilate', value: humidityData.ventilate },
+                { id: 'fog-risk', value: humidityData.fogRisk }
+            ];
+
+            humidityElements.forEach(item => {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    if (item.value.includes('IDEAL') || item.value.includes('RAPIDE') || item.value.includes('FAIBLE') ||
+                        item.value.includes('OPTIONNEL')) {
+                        element.className = 'value status-ok';
+                    } else if (item.value.includes('SEC') || item.value.includes('HUMIDE') || item.value.includes('NORMAL') ||
+                               item.value.includes('RECOMMANDE') || item.value.includes('MOYEN')) {
+                        element.className = 'value status-caution';
+                    } else if (item.value.includes('TRES') || item.value.includes('LENT') || item.value.includes('URGENT') ||
+                               item.value.includes('ELEVE') || item.value.includes('NON')) {
+                        element.className = 'value status-bad';
+                    } else {
+                        element.className = 'value';
+                    }
+                }
+            });
+
+            // Colorer selon les résultats des activités
+            ['school', 'sport', 'picnic', 'garden', 'bbq', 'car', 'watering', 'drying'].forEach(activity => {
                 const element = document.getElementById(`activity-${activity}`);
                 if (element) {
                     const text = element.textContent;
                     if (text.includes('PARFAIT') || text.includes('IDEAL') || text.includes('GO') ||
-                        text.includes('T-SHIRT') || text.includes('RAPIDE') || text.includes('INUTILE')) {
+                        text.includes('T-SHIRT') || text.includes('INUTILE')) {
                         element.className = 'status-ok';
-                    } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') || text.includes('NORMAL') ||
+                    } else if (text.includes('PREVOIR') || text.includes('ATTENDRE') ||
                                text.includes('OPTIONNEL') || text.includes('GILET') || text.includes('VESTE') ||
                                text.includes('ACCEPTABLE')) {
                         element.className = 'status-caution';
-                    } else if (text.includes('MANTEAU') || text.includes('LENT') || text.includes('REPORTER') ||
+                    } else if (text.includes('MANTEAU') || text.includes('REPORTER') ||
                                text.includes('IMPOSSIBLE') || text.includes('URGENT')) {
                         element.className = 'status-bad';
                     }
