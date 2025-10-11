@@ -2720,33 +2720,6 @@
                 } else {
                     floweringFrostElement.className = 'value status-flowering-good';
                 }
-
-                const waterElement = document.getElementById('water-stress');
-                if (farmerData.waterStress === 'ELEVE') {
-                    waterElement.className = 'value status-water-high';
-                } else if (farmerData.waterStress === 'MOYEN') {
-                    waterElement.className = 'value status-water-medium';
-                } else {
-                    waterElement.className = 'value status-water-low';
-                }
-
-                const mildewElement = document.getElementById('mildew-risk');
-                if (farmerData.mildewRisk === 'ELEVE') {
-                    mildewElement.className = 'value status-disease-high';
-                } else if (farmerData.mildewRisk === 'MOYEN') {
-                    mildewElement.className = 'value status-disease-medium';
-                } else {
-                    mildewElement.className = 'value status-disease-low';
-                }
-
-                const oidumElement = document.getElementById('powdery-mildew-risk');
-                if (farmerData.powderyMildewRisk === 'ELEVE') {
-                    oidumElement.className = 'value status-disease-high';
-                } else if (farmerData.powderyMildewRisk === 'MOYEN') {
-                    oidumElement.className = 'value status-disease-medium';
-                } else {
-                    oidumElement.className = 'value status-disease-low';
-                }
             }
 
             // Colorer les éléments d'humidité
