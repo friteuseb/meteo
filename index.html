@@ -894,10 +894,12 @@
             <div class="city-display" id="city-display" style="color: #ffff00; font-size: 12px; margin: 5px 0; text-align: center;">Ville: AMIENS</div>
             <div class="subtitle">Données en temps réel</div>
             <div class="timestamp" id="timestamp">DERNIERE MAJ: --</div>
-            <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="toggleMode()" id="mode-toggle" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">MODE SIMPLE</button>
-                <button onclick="loadWeatherData(true)" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">↻ RAFRAICHIR</button>
-            </div>
+             <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                 <button onclick="setMode('advanced')" id="mode-advanced" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">MODE AVANCÉ</button>
+                 <button onclick="setMode('simplified')" id="mode-simple" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">MODE SIMPLE</button>
+                 <button onclick="setMode('farmer')" id="mode-farmer" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">MODE AGRICULTEUR</button>
+                 <button onclick="loadWeatherData(true)" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">↻ RAFRAICHIR</button>
+             </div>
         </div>
 
         <div class="loading" id="loading">
@@ -2072,11 +2074,41 @@
                 pestActivity = "MOYEN";
             }
 
-            // Calendrier agricole
-            const optimalSeeding = temp > 10 && temp < 20 && rain < 1 ? "AUJOURD'HUI" : "ATTENDRE CONDITIONS";
-            const harvestWindow = daily.precipitation_probability_max.slice(0, 7).filter(p => p < 30).length;
-            const soilWork = rain < 0.5 && windSpeed < 20 ? "OUI" : "NON";
-            const dryingConditions = humidity < 70 && windSpeed > 5 ? "FAVORABLES" : "DIFFICILES";
+            // === CALCULS SAISONNIERS ===
+
+            // Obtenir le mois actuel pour adapter les recommandations
+            const currentMonth = new Date().getMonth(); // 0-11
+            const season = getSeason(currentMonth);
+
+            // Calendrier agricole adapté à la saison
+            let optimalSeeding = "HORS SAISON";
+            let harvestWindow = daily.precipitation_probability_max.slice(0, 7).filter(p => p < 30).length;
+            let soilWork = rain < 0.5 && windSpeed < 20 ? "OUI" : "NON";
+            let dryingConditions = humidity < 70 && windSpeed > 5 ? "FAVORABLES" : "DIFFICILES";
+
+            // Recommandations selon la saison
+            if (season === 'printemps') {
+                optimalSeeding = temp > 8 && temp < 18 && rain < 2 ? "FAVORABLE" : "ATTENDRE RECHAUFFEMENT";
+                soilWork = (temp > 5 && rain < 1) ? "IDEAL" : "ATTENDRE";
+            } else if (season === 'ete') {
+                optimalSeeding = temp > 15 && temp < 25 && rain < 1 ? "SEMIS ETE POSSIBLE" : "TROP CHAUD/SEC";
+                soilWork = (temp < 30 && humidity > 40) ? "OUI MAIS ARROSER" : "ATTENDRE FRAICHEUR";
+                dryingConditions = (temp > 20 && windSpeed > 8) ? "EXCELLENTES" : dryingConditions;
+            } else if (season === 'automne') {
+                optimalSeeding = temp > 10 && temp < 20 && rain < 1 ? "DERNIERS SEMIS" : "HORS TEMPS";
+                soilWork = (temp > 8 && rain < 2) ? "DERNIERS TRAVAUX" : "ATTENDRE";
+            } else { // hiver
+                optimalSeeding = "SAISON TERMINEE";
+                soilWork = (temp > 3 && rain < 0.5) ? "TRAVAUX HIVER POSSIBLES" : "CONDITIONS DIFFICILES";
+            }
+
+            // Fonction pour déterminer la saison
+            function getSeason(month) {
+                if (month >= 2 && month <= 4) return 'printemps'; // mars-mai
+                if (month >= 5 && month <= 7) return 'ete'; // juin-août
+                if (month >= 8 && month <= 10) return 'automne'; // septembre-novembre
+                return 'hiver'; // décembre-février
+            }
 
             // === CALCULS SPÉCIFIQUES PÉPINIÈRE ===
 
@@ -2088,30 +2120,56 @@
                 youngTreeFrost = "MOYEN";
             }
 
-            // Protection hivernale
-            let winterProtection = "PAILLIS";
-            if (minTempToday <= -10) {
-                winterProtection = "VOILE + PAILLIS";
-            } else if (minTempToday <= -5) {
-                winterProtection = "PAILLIS EPAIS";
-            }
-
-            // Arrosage hivernal (prévention dessèchement)
-            let winterWatering = "MODERE";
-            if (humidity < 40 && windSpeed > 10) {
-                winterWatering = "SUPPLEMENTAIRE";
-            } else if (humidity < 60) {
-                winterWatering = "NORMAL";
+            // Protection hivernale adaptée à la saison
+            let winterProtection = "PAILLIS LÉGER";
+            if (season === 'hiver') {
+                if (minTempToday <= -10) {
+                    winterProtection = "VOILE D'HIVERNAGE + PAILLIS EPAIS";
+                } else if (minTempToday <= -5) {
+                    winterProtection = "PAILLIS EPAIS + PROTECTION RACINES";
+                } else if (minTempToday <= 0) {
+                    winterProtection = "PAILLIS + SURVEILLANCE";
+                }
+            } else if (season === 'automne') {
+                winterProtection = "PREPARATION HIVERNALE - PAILLIS";
             } else {
-                winterWatering = "REDUIT";
+                winterProtection = "PROTECTION NON NECESSAIRE";
             }
 
-            // Taille hivernale (conditions météo)
-            let winterPruning = "POSSIBLE";
-            if (minTempToday < -5) {
-                winterPruning = "ATTENDRE RECHAUFFEMENT";
-            } else if (rain > 2) {
-                winterPruning = "ATTENDRE TEMPS SEC";
+            // Arrosage adapté à la saison (prévention dessèchement)
+            let winterWatering = "SELON BESOINS";
+            if (season === 'hiver') {
+                if (humidity < 40 && windSpeed > 10) {
+                    winterWatering = "ARROSAGE ANTI-DESSÈCHEMENT";
+                } else if (humidity < 60) {
+                    winterWatering = "ARROSAGE MODÉRÉ";
+                } else {
+                    winterWatering = "ARROSAGE RÉDUIT";
+                }
+            } else if (season === 'automne') {
+                winterWatering = "DERNIERS ARROSAGES PROFONDS";
+            } else if (season === 'printemps') {
+                winterWatering = "REPRISE ARROSAGE PROGRESSIVE";
+            } else {
+                winterWatering = "ARROSAGE REGULIER";
+            }
+
+            // Taille adaptée à la saison
+            let winterPruning = "SELON ESPÈCE";
+            if (season === 'hiver') {
+                if (minTempToday < -5) {
+                    winterPruning = "ATTENDRE RÉCHAUFFEMENT (+5°C)";
+                } else if (rain > 2) {
+                    winterPruning = "ATTENDRE TEMPS SEC";
+                } else {
+                    winterPruning = "TAILLE HIVERNALE POSSIBLE";
+                }
+            } else if (season === 'printemps') {
+                winterPruning = "TAILLE DE FLORAISON";
+            } else if (season === 'ete') {
+                winterPruning = "TAILLE VERTE POSSIBLE";
+            } else {
+                winterPruning = "TAILLE D'AUTOMNE";
             }
 
             // Maladies spécifiques fruitiers
@@ -2177,11 +2235,24 @@
                 pollinationWindow = daily.temperature_2m_max.slice(0, 7).filter(t => t > 15 && t < 25).length;
             }
 
-            // Calendrier pépinière
-            const springPlanting = temp > 8 && temp < 18 && rain < 2 ? "FAVORABLE" : "ATTENDRE";
-            const summerPruning = temp > 15 && humidity < 80 && windSpeed < 15 ? "POSSIBLE" : "ATTENDRE";
-            const fruitHarvest = harvestWindow > 3 ? "PROCHAINEMENT" : "PLUS TARD";
-            const winterPrep = minTempToday < 5 ? "URGENT" : "EN COURS";
+            // Calendrier pépinière adapté aux saisons
+            let springPlanting = "HORS SAISON";
+            let summerPruning = "HORS SAISON";
+            let fruitHarvest = "SELON VARIÉTÉS";
+            let winterPrep = "SELON SAISON";
+
+            if (season === 'printemps') {
+                springPlanting = temp > 8 && temp < 18 && rain < 2 ? "CONDITIONS OPTIMALES" : "ATTENDRE RÉCHAUFFEMENT";
+                fruitHarvest = harvestWindow > 3 ? "DÉBUT RÉCOLTE" : "PLUS TARD";
+            } else if (season === 'ete') {
+                summerPruning = temp > 15 && humidity < 80 && windSpeed < 15 ? "TAILLE VERTE POSSIBLE" : "ATTENDRE FRAÎCHEUR";
+                fruitHarvest = harvestWindow > 3 ? "PLEINE RÉCOLTE" : "SURVEILLER";
+            } else if (season === 'automne') {
+                fruitHarvest = harvestWindow > 3 ? "FIN RÉCOLTE" : "RÉCOLTE TERMINÉE";
+                winterPrep = minTempToday < 8 ? "PRÉPARATION URGENTE" : "EN COURS";
+            } else { // hiver
+                winterPrep = minTempToday < 0 ? "PROTECTIONS MAXIMALES" : "MAINTIEN HIVERNAL";
+            }
 
             return {
                 // Données agricoles existantes
@@ -2344,35 +2415,48 @@
             loadWeatherData(true);
         }
 
-        // Basculer entre les modes
-        function toggleMode() {
+        // Définir un mode spécifique
+        function setMode(mode) {
             const body = document.body;
-            const toggleBtn = document.getElementById('mode-toggle');
 
             // Retirer toutes les classes de mode
             body.classList.remove('simplified-mode', 'farmer-mode');
 
-            // Cycle: advanced -> simplified -> farmer -> advanced
-            if (currentMode === 'advanced') {
-                currentMode = 'simplified';
+            // Mettre à jour le mode actuel
+            currentMode = mode;
+
+            // Appliquer la classe appropriée
+            if (mode === 'simplified') {
                 body.classList.add('simplified-mode');
-                toggleBtn.textContent = 'MODE AGRICULTEUR';
-                localStorage.setItem('meteo_mode', 'simplified');
-            } else if (currentMode === 'simplified') {
-                currentMode = 'farmer';
+            } else if (mode === 'farmer') {
                 body.classList.add('farmer-mode');
-                toggleBtn.textContent = 'MODE AVANCÉ';
-                localStorage.setItem('meteo_mode', 'farmer');
-            } else {
-                currentMode = 'advanced';
-                toggleBtn.textContent = 'MODE SIMPLE';
-                localStorage.setItem('meteo_mode', 'advanced');
             }
+
+            // Sauvegarder en localStorage
+            localStorage.setItem('meteo_mode', mode);
+
+            // Mettre à jour l'apparence des boutons
+            updateModeButtons();
 
             // Recharger l'affichage avec le nouveau mode
             if (window.lastWeatherData) {
                 displayWeatherData(window.lastWeatherData);
             }
+        }
+
+        // Mettre à jour l'apparence des boutons de mode
+        function updateModeButtons() {
+            const buttons = ['advanced', 'simplified', 'farmer'];
+            buttons.forEach(mode => {
+                const button = document.getElementById(`mode-${mode}`);
+                if (currentMode === mode) {
+                    button.style.background = 'rgba(0, 255, 0, 0.2)';
+                    button.style.borderColor = '#ffff00';
+                } else {
+                    button.style.background = 'transparent';
+                    button.style.borderColor = '#00ff00';
+                }
+            });
         }
 
         // Système de cache pour limiter les appels API
@@ -2847,16 +2931,8 @@
             }
 
             // Charger le mode préféré
-            const savedMode = localStorage.getItem('meteo_mode');
-            if (savedMode === 'simplified') {
-                currentMode = 'simplified';
-                document.body.classList.add('simplified-mode');
-                document.getElementById('mode-toggle').textContent = 'MODE AGRICULTEUR';
-            } else if (savedMode === 'farmer') {
-                currentMode = 'farmer';
-                document.body.classList.add('farmer-mode');
-                document.getElementById('mode-toggle').textContent = 'MODE AVANCÉ';
-            }
+            const savedMode = localStorage.getItem('meteo_mode') || 'advanced';
+            setMode(savedMode);
 
             // Charger les données au démarrage
             loadWeatherData();
