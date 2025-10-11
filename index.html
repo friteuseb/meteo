@@ -598,6 +598,193 @@
             display: block !important;
         }
 
+        /* Mode Agriculteur */
+        .farmer-mode {
+            background: linear-gradient(135deg, #2d4a22 0%, #1a2e16 100%);
+            color: #d4e4bc;
+        }
+
+        .farmer-mode .header {
+            border-color: #8b7355;
+            background: rgba(139, 115, 85, 0.1);
+        }
+
+        .farmer-mode .title {
+            color: #d4e4bc;
+        }
+
+        .farmer-mode .subtitle {
+            color: #a8c66c;
+        }
+
+        .farmer-mode .panel {
+            border-color: #8b7355;
+            background: rgba(139, 115, 85, 0.05);
+        }
+
+        .farmer-mode .panel-title {
+            color: #a8c66c;
+            border-bottom-color: #666;
+        }
+
+        .farmer-mode .value {
+            color: #d4e4bc;
+        }
+
+        .farmer-mode .label {
+            color: #b8c994;
+        }
+
+        .farmer-mode .weather-visual {
+            border-color: #8b7355;
+            background: rgba(139, 115, 85, 0.02);
+        }
+
+        .farmer-mode .forecast-section {
+            border-color: #8b7355;
+            background: rgba(139, 115, 85, 0.02);
+        }
+
+        .farmer-mode .forecast-title {
+            color: #a8c66c;
+        }
+
+        .farmer-mode .forecast-day.today {
+            border-color: #a8c66c;
+            background: rgba(168, 198, 108, 0.1);
+        }
+
+        .farmer-mode .forecast-day-name {
+            color: #a8c66c;
+        }
+
+        .farmer-mode .hourly-forecast {
+            border-color: #8b7355;
+            background: rgba(139, 115, 85, 0.02);
+        }
+
+        .farmer-mode .hourly-title {
+            color: #a8c66c;
+        }
+
+        .farmer-mode .hourly-item.current {
+            border-color: #a8c66c;
+            background: rgba(168, 198, 108, 0.05);
+        }
+
+        .farmer-mode .alerts-section {
+            border-color: #cc4444;
+            background: rgba(204, 68, 68, 0.1);
+        }
+
+        .farmer-mode .alert-title {
+            color: #ff6666;
+        }
+
+        .farmer-mode .activity-section {
+            border-color: #666;
+        }
+
+        .farmer-mode .activity-title {
+            color: #a8c66c;
+        }
+
+        /* Styles spécifiques au mode agriculteur */
+        .farmer-section {
+            margin: 30px 0;
+        }
+
+        .farmer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .farmer-panel {
+            border: solid 1px #8b7355;
+            padding: 20px;
+            background: rgba(139, 115, 85, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .farmer-alerts {
+            margin-bottom: 30px;
+            border: solid 2px #cc4444;
+            padding: 15px;
+            background: rgba(204, 68, 68, 0.1);
+        }
+
+        .farmer-diseases {
+            margin: 30px 0;
+            border: solid 1px #666;
+            padding: 20px;
+        }
+
+        .farmer-diseases-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .disease-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #333;
+            background: rgba(139, 115, 85, 0.02);
+        }
+
+        .farmer-calendar {
+            margin: 30px 0;
+            border: solid 1px #666;
+            padding: 20px;
+        }
+
+        .farmer-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .calendar-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #333;
+            background: rgba(139, 115, 85, 0.02);
+        }
+
+        /* Masquer les sections normales en mode agriculteur */
+        .farmer-mode .main-grid,
+        .farmer-mode .hourly-forecast,
+        .farmer-mode .activity-section,
+        .farmer-mode .current-summary,
+        .farmer-mode .forecast-section {
+            display: none !important;
+        }
+
+        /* Afficher seulement les sections agriculteurs */
+        .farmer-mode .farmer-section {
+            display: block !important;
+        }
+
+        /* Couleurs spécifiques agriculteur */
+        .farmer-mode .status-frost-high { color: #ff4444; }
+        .farmer-mode .status-frost-medium { color: #ffaa44; }
+        .farmer-mode .status-frost-low { color: #44ff44; }
+
+        .farmer-mode .status-water-high { color: #4488ff; }
+        .farmer-mode .status-water-medium { color: #44ff44; }
+        .farmer-mode .status-water-low { color: #ffaa44; }
+
+        .farmer-mode .status-disease-high { color: #ff4444; }
+        .farmer-mode .status-disease-medium { color: #ffaa44; }
+        .farmer-mode .status-disease-low { color: #44ff44; }
+
         @media (max-width: 768px) {
             body {
                 font-size: 12px;
@@ -617,6 +804,18 @@
             }
 
             .simplified-mode .current-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .farmer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .farmer-diseases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .farmer-calendar-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -832,51 +1031,167 @@
                 </div>
             </div>
 
-            <div class="activity-section">
-                <div class="activity-title">[ CONSEILS DU JOUR ]</div>
-                <div class="activity-grid">
-                    <div class="activity-item">
-                        <span>TENUE ECOLE:</span>
-                        <span class="status-ok" id="activity-school">T-SHIRT</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>VELO/FOOTING:</span>
-                        <span class="status-ok" id="activity-sport">PARFAIT</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>PIQUE-NIQUE:</span>
-                        <span class="status-caution" id="activity-picnic">PREVOIR PULL</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>BARBECUE:</span>
-                        <span class="status-ok" id="activity-bbq">GO</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>JARDINAGE:</span>
-                        <span class="status-ok" id="activity-garden">IDEAL</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>ARROSER JARDIN:</span>
-                        <span class="status-caution" id="activity-watering">NON</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>SECHER LINGE DEHORS:</span>
-                        <span class="status-ok" id="activity-drying">PARFAIT</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>RANDONNEE:</span>
-                        <span class="status-ok" id="activity-hiking">IDEAL</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>BIVOUAC:</span>
-                        <span class="status-caution" id="activity-camping">PREVOIR CHAUD</span>
-                    </div>
-                    <div class="activity-item">
-                        <span>LAVER VOITURE:</span>
-                        <span class="status-caution" id="activity-car">ATTENDRE 2J</span>
-                    </div>
-                </div>
-            </div>
+             <div class="activity-section">
+                 <div class="activity-title">[ CONSEILS DU JOUR ]</div>
+                 <div class="activity-grid">
+                     <div class="activity-item">
+                         <span>TENUE ECOLE:</span>
+                         <span class="status-ok" id="activity-school">T-SHIRT</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>VELO/FOOTING:</span>
+                         <span class="status-ok" id="activity-sport">PARFAIT</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>PIQUE-NIQUE:</span>
+                         <span class="status-caution" id="activity-picnic">PREVOIR PULL</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>BARBECUE:</span>
+                         <span class="status-ok" id="activity-bbq">GO</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>JARDINAGE:</span>
+                         <span class="status-ok" id="activity-garden">IDEAL</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>ARROSER JARDIN:</span>
+                         <span class="status-caution" id="activity-watering">NON</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>SECHER LINGE DEHORS:</span>
+                         <span class="status-ok" id="activity-drying">PARFAIT</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>RANDONNEE:</span>
+                         <span class="status-ok" id="activity-hiking">IDEAL</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>BIVOUAC:</span>
+                         <span class="status-caution" id="activity-camping">PREVOIR CHAUD</span>
+                     </div>
+                     <div class="activity-item">
+                         <span>LAVER VOITURE:</span>
+                         <span class="status-caution" id="activity-car">ATTENDRE 2J</span>
+                     </div>
+                 </div>
+             </div>
+
+             <!-- Section Agriculteur -->
+             <div class="farmer-section" id="farmer-section" style="display: none;">
+                 <div class="farmer-alerts" id="farmer-alerts" style="display: none;">
+                     <div class="alert-title">[ ALERTES AGRICOLES ]</div>
+                     <div class="alerts-grid" id="farmer-alerts-grid">
+                         <!-- Alertes agricoles dynamiques -->
+                     </div>
+                 </div>
+
+                 <div class="farmer-grid">
+                     <div class="farmer-panel">
+                         <div class="panel-title">[ GEL & PROTECTION ]</div>
+                         <div class="data-line">
+                             <span class="label">RISQUE GEL AUJOURD'HUI:</span>
+                             <span class="value" id="frost-risk-today">FAIBLE</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">TEMP MIN PROCHAINES NUITS:</span>
+                             <span class="value" id="frost-next-nights">--°C</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">PROTECTION RECOMMANDEE:</span>
+                             <span class="value" id="frost-protection">AUCUNE</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">JOURS SANS GEL:</span>
+                             <span class="value" id="frost-free-days">--</span>
+                         </div>
+                     </div>
+
+                     <div class="farmer-panel">
+                         <div class="panel-title">[ IRRIGATION & EAU ]</div>
+                         <div class="data-line">
+                             <span class="label">BESOINS IRRIGATION:</span>
+                             <span class="value" id="irrigation-needs">MODERES</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">PLUIE RECENTE (7J):</span>
+                             <span class="value" id="recent-rain">-- mm</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">EVAPORATION ESTIMEE:</span>
+                             <span class="value" id="evaporation">-- mm/jour</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">STRESS HYDRIQUE:</span>
+                             <span class="value" id="water-stress">FAIBLE</span>
+                         </div>
+                     </div>
+
+                     <div class="farmer-panel">
+                         <div class="panel-title">[ TRAITEMENTS PHYTOS ]</div>
+                         <div class="data-line">
+                             <span class="label">CONDITIONS PULVERISATION:</span>
+                             <span class="value" id="spraying-conditions">FAVORABLES</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">VENT POUR TRAITEMENTS:</span>
+                             <span class="value" id="treatment-wind">OK</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">PLUIE DANS 24H:</span>
+                             <span class="value" id="rain-24h">-- mm</span>
+                         </div>
+                         <div class="data-line">
+                             <span class="label">FENETRE TRAITEMENT:</span>
+                             <span class="value" id="treatment-window">-- heures</span>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="farmer-diseases">
+                     <div class="panel-title">[ MALADIES & PARASITES ]</div>
+                     <div class="farmer-diseases-grid">
+                         <div class="disease-item">
+                             <span>RISQUE MILDOUT:</span>
+                             <span class="value" id="mildew-risk">FAIBLE</span>
+                         </div>
+                         <div class="disease-item">
+                             <span>RISQUE OIDUM:</span>
+                             <span class="value" id="powdery-mildew-risk">FAIBLE</span>
+                         </div>
+                         <div class="disease-item">
+                             <span>CONDITIONS FONGIQUES:</span>
+                             <span class="value" id="fungal-conditions">DEFAVORABLES</span>
+                         </div>
+                         <div class="disease-item">
+                             <span>ACTIVITE PARASITES:</span>
+                             <span class="value" id="pest-activity">FAIBLE</span>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="farmer-calendar">
+                     <div class="panel-title">[ CALENDRIER AGRICOLE ]</div>
+                     <div class="farmer-calendar-grid">
+                         <div class="calendar-item">
+                             <span>JOURS OPTIMAUX SEMIS:</span>
+                             <span class="value" id="optimal-seeding">--</span>
+                         </div>
+                         <div class="calendar-item">
+                             <span>FENETRE RECOLTE:</span>
+                             <span class="value" id="harvest-window">-- jours</span>
+                         </div>
+                         <div class="calendar-item">
+                             <span>TRAVAIL SOL POSSIBLE:</span>
+                             <span class="value" id="soil-work">OUI</span>
+                         </div>
+                         <div class="calendar-item">
+                             <span>SECHAGE RECOLTES:</span>
+                             <span class="value" id="drying-conditions">FAVORABLES</span>
+                         </div>
+                     </div>
+                 </div>
+             </div>
 
             <div class="ascii-art">┌─────────────────────────────────────────────────────────────┐
 │               Météo locale sans exagération                │
@@ -899,7 +1214,7 @@
         };
 
         // Mode d'affichage
-        let isSimplifiedMode = false;
+        let currentMode = 'advanced'; // 'advanced', 'simplified', 'farmer'
 
         // Système de cache par ville
         const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes en millisecondes
@@ -1193,9 +1508,9 @@
             document.getElementById('hourly-container').innerHTML = hourlyHTML;
         }
 
-        // Afficher prévisions 7 jours (3 jours en mode simple)
+        // Afficher prévisions 7 jours (3 jours en mode simple, 7 en agriculteur)
         function displayWeeklyForecast(daily) {
-            const days = isSimplifiedMode ? 3 : 7;
+            const days = currentMode === 'simplified' ? 3 : 7;
             const dayNames = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
             const dayNamesFull = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
@@ -1483,6 +1798,198 @@
             };
         }
 
+        // Calculer les données agricoles
+        function calculateFarmerData(data) {
+            const current = data.current;
+            const daily = data.daily;
+            const hourly = data.hourly;
+
+            const temp = current.temperature_2m;
+            const humidity = current.relative_humidity_2m;
+            const windSpeed = current.wind_speed_10m;
+            const rain = current.precipitation;
+
+            // Risque de gel
+            const minTempToday = daily.temperature_2m_min[0];
+            let frostRiskToday = "FAIBLE";
+            let frostProtection = "AUCUNE";
+
+            if (minTempToday <= -2) {
+                frostRiskToday = "ELEVE";
+                frostProtection = "PAILLAGE URGENT";
+            } else if (minTempToday <= 0) {
+                frostRiskToday = "MOYEN";
+                frostProtection = "PROTEGER SENSIBLES";
+            } else if (minTempToday <= 2) {
+                frostRiskToday = "FAIBLE";
+                frostProtection = "SURVEILLER";
+            }
+
+            // Températures minimales des prochaines nuits
+            const nextNights = [];
+            for (let i = 1; i <= 3; i++) {
+                if (daily.temperature_2m_min[i] !== undefined) {
+                    nextNights.push(daily.temperature_2m_min[i]);
+                }
+            }
+            const frostNextNights = nextNights.length > 0 ? Math.min(...nextNights).toFixed(1) + "°C" : "--°C";
+
+            // Jours sans gel
+            let frostFreeDays = 0;
+            for (let i = 0; i < 7; i++) {
+                if (daily.temperature_2m_min[i] > 0) {
+                    frostFreeDays++;
+                } else {
+                    break;
+                }
+            }
+
+            // Besoins en irrigation
+            const recentRain = daily.precipitation_sum.slice(0, 7).reduce((a, b) => a + b, 0);
+            const evaporation = temp > 15 ? 4 : temp > 10 ? 2 : 1; // mm/jour approximatif
+            let irrigationNeeds = "MODERES";
+            let waterStress = "FAIBLE";
+
+            if (recentRain < 5 && temp > 20) {
+                irrigationNeeds = "URGENTS";
+                waterStress = "ELEVE";
+            } else if (recentRain < 10 && temp > 15) {
+                irrigationNeeds = "RECOMMANDES";
+                waterStress = "MOYEN";
+            } else if (recentRain > 20) {
+                irrigationNeeds = "REDUIRE";
+                waterStress = "FAIBLE";
+            }
+
+            // Conditions de pulvérisation
+            let sprayingConditions = "FAVORABLES";
+            let treatmentWind = "OK";
+
+            if (windSpeed > 15) {
+                sprayingConditions = "DEFAVORABLES";
+                treatmentWind = "VENT FORT - RISQUE DERIVE";
+            } else if (windSpeed > 10) {
+                sprayingConditions = "LIMITES";
+                treatmentWind = "VENT MODERE";
+            }
+
+            // Pluie dans 24h
+            let rain24h = 0;
+            if (hourly && hourly.precipitation) {
+                for (let i = 0; i < 24 && i < hourly.precipitation.length; i++) {
+                    rain24h += hourly.precipitation[i] || 0;
+                }
+            }
+            rain24h = rain24h.toFixed(1);
+
+            // Fenêtre de traitement (heures sans pluie)
+            let treatmentWindow = 24;
+            if (hourly && hourly.precipitation) {
+                for (let i = 0; i < 24 && i < hourly.precipitation.length; i++) {
+                    if ((hourly.precipitation[i] || 0) > 0.1) {
+                        treatmentWindow = i;
+                        break;
+                    }
+                }
+            }
+
+            // Risques maladies
+            let mildewRisk = "FAIBLE";
+            let powderyMildewRisk = "FAIBLE";
+            let fungalConditions = "DEFAVORABLES";
+            let pestActivity = "FAIBLE";
+
+            // Conditions favorables au mildiou (humidité + température)
+            if (humidity > 80 && temp > 10 && temp < 25 && rain > 0.5) {
+                mildewRisk = "ELEVE";
+                fungalConditions = "FAVORABLES";
+            } else if (humidity > 70 && temp > 15 && temp < 20) {
+                mildewRisk = "MOYEN";
+                fungalConditions = "MODERE";
+            }
+
+            // Conditions favorables à l'oïdium (sécheresse + chaleur)
+            if (humidity < 50 && temp > 25) {
+                powderyMildewRisk = "ELEVE";
+            } else if (humidity < 60 && temp > 20) {
+                powderyMildewRisk = "MOYEN";
+            }
+
+            // Activité des parasites
+            if (temp > 20 && humidity > 60) {
+                pestActivity = "ELEVE";
+            } else if (temp > 15 && humidity > 50) {
+                pestActivity = "MOYEN";
+            }
+
+            // Calendrier agricole
+            const optimalSeeding = temp > 10 && temp < 20 && rain < 1 ? "AUJOURD'HUI" : "ATTENDRE CONDITIONS";
+            const harvestWindow = daily.precipitation_probability_max.slice(0, 7).filter(p => p < 30).length;
+            const soilWork = rain < 0.5 && windSpeed < 20 ? "OUI" : "NON";
+            const dryingConditions = humidity < 70 && windSpeed > 5 ? "FAVORABLES" : "DIFFICILES";
+
+            return {
+                frostRiskToday,
+                frostNextNights,
+                frostProtection,
+                frostFreeDays,
+                irrigationNeeds,
+                recentRain: recentRain.toFixed(1),
+                evaporation,
+                waterStress,
+                sprayingConditions,
+                treatmentWind,
+                rain24h,
+                treatmentWindow,
+                mildewRisk,
+                powderyMildewRisk,
+                fungalConditions,
+                pestActivity,
+                optimalSeeding,
+                harvestWindow,
+                soilWork,
+                dryingConditions
+            };
+        }
+
+        // Afficher les alertes agricoles
+        function displayFarmerAlerts(data) {
+            const alerts = [];
+            const daily = data.daily;
+            const current = data.current;
+
+            // Alerte gel sévère
+            if (daily.temperature_2m_min[0] <= -2) {
+                alerts.push(`❄️ GEL SEVERE: ${daily.temperature_2m_min[0].toFixed(1)}°C - Protection maximale requise`);
+            }
+
+            // Alerte sécheresse
+            const weeklyRain = daily.precipitation_sum.slice(0, 7).reduce((a, b) => a + b, 0);
+            if (weeklyRain < 5) {
+                alerts.push(`🌵 SECHERESSE: ${weeklyRain.toFixed(1)}mm/semaine - Irrigation urgente`);
+            }
+
+            // Alerte maladies
+            if (current.relative_humidity_2m > 80 && current.temperature_2m > 10 && current.temperature_2m < 25) {
+                alerts.push(`🍄 RISQUE MALADIES: Conditions favorables au mildiou - Traiter préventivement`);
+            }
+
+            // Alerte vent fort pour traitements
+            if (current.wind_speed_10m > 15) {
+                alerts.push(`💨 VENT FORT: ${Math.round(current.wind_speed_10m)}km/h - Reporter les pulvérisations`);
+            }
+
+            const alertsSection = document.getElementById('farmer-alerts');
+            const alertsGrid = document.getElementById('farmer-alerts-grid');
+
+            if (alerts.length > 0) {
+                alertsSection.style.display = 'block';
+                alertsGrid.innerHTML = alerts.map(alert => `<div class="alert-item">${alert}</div>`).join('');
+            } else {
+                alertsSection.style.display = 'none';
+            }
+        }
+
         // Autocomplétion des villes
         let searchTimeout;
         let selectedSuggestionIndex = -1;
@@ -1564,18 +2071,27 @@
             loadWeatherData(true);
         }
 
-        // Basculer entre mode simple et avancé
+        // Basculer entre les modes
         function toggleMode() {
-            isSimplifiedMode = !isSimplifiedMode;
             const body = document.body;
             const toggleBtn = document.getElementById('mode-toggle');
 
-            if (isSimplifiedMode) {
+            // Retirer toutes les classes de mode
+            body.classList.remove('simplified-mode', 'farmer-mode');
+
+            // Cycle: advanced -> simplified -> farmer -> advanced
+            if (currentMode === 'advanced') {
+                currentMode = 'simplified';
                 body.classList.add('simplified-mode');
-                toggleBtn.textContent = 'MODE AVANCÉ';
+                toggleBtn.textContent = 'MODE AGRICULTEUR';
                 localStorage.setItem('meteo_mode', 'simplified');
+            } else if (currentMode === 'simplified') {
+                currentMode = 'farmer';
+                body.classList.add('farmer-mode');
+                toggleBtn.textContent = 'MODE AVANCÉ';
+                localStorage.setItem('meteo_mode', 'farmer');
             } else {
-                body.classList.remove('simplified-mode');
+                currentMode = 'advanced';
                 toggleBtn.textContent = 'MODE SIMPLE';
                 localStorage.setItem('meteo_mode', 'advanced');
             }
@@ -1781,6 +2297,79 @@
             document.getElementById('activity-hiking').textContent = activities.hiking;
             document.getElementById('activity-camping').textContent = activities.camping;
 
+            // Données agricoles si mode agriculteur
+            if (currentMode === 'farmer') {
+                const farmerData = calculateFarmerData(data);
+                displayFarmerAlerts(data);
+
+                // Gel et protection
+                document.getElementById('frost-risk-today').textContent = farmerData.frostRiskToday;
+                document.getElementById('frost-next-nights').textContent = farmerData.frostNextNights;
+                document.getElementById('frost-protection').textContent = farmerData.frostProtection;
+                document.getElementById('frost-free-days').textContent = farmerData.frostFreeDays;
+
+                // Irrigation
+                document.getElementById('irrigation-needs').textContent = farmerData.irrigationNeeds;
+                document.getElementById('recent-rain').textContent = farmerData.recentRain + " mm";
+                document.getElementById('evaporation').textContent = farmerData.evaporation + " mm/jour";
+                document.getElementById('water-stress').textContent = farmerData.waterStress;
+
+                // Traitements
+                document.getElementById('spraying-conditions').textContent = farmerData.sprayingConditions;
+                document.getElementById('treatment-wind').textContent = farmerData.treatmentWind;
+                document.getElementById('rain-24h').textContent = farmerData.rain24h + " mm";
+                document.getElementById('treatment-window').textContent = farmerData.treatmentWindow + "h";
+
+                // Maladies
+                document.getElementById('mildew-risk').textContent = farmerData.mildewRisk;
+                document.getElementById('powdery-mildew-risk').textContent = farmerData.powderyMildewRisk;
+                document.getElementById('fungal-conditions').textContent = farmerData.fungalConditions;
+                document.getElementById('pest-activity').textContent = farmerData.pestActivity;
+
+                // Calendrier
+                document.getElementById('optimal-seeding').textContent = farmerData.optimalSeeding;
+                document.getElementById('harvest-window').textContent = farmerData.harvestWindow + " jours";
+                document.getElementById('soil-work').textContent = farmerData.soilWork;
+                document.getElementById('drying-conditions').textContent = farmerData.dryingConditions;
+
+                // Colorer selon les niveaux de risque
+                const frostElement = document.getElementById('frost-risk-today');
+                if (farmerData.frostRiskToday === 'ELEVE') {
+                    frostElement.className = 'value status-frost-high';
+                } else if (farmerData.frostRiskToday === 'MOYEN') {
+                    frostElement.className = 'value status-frost-medium';
+                } else {
+                    frostElement.className = 'value status-frost-low';
+                }
+
+                const waterElement = document.getElementById('water-stress');
+                if (farmerData.waterStress === 'ELEVE') {
+                    waterElement.className = 'value status-water-high';
+                } else if (farmerData.waterStress === 'MOYEN') {
+                    waterElement.className = 'value status-water-medium';
+                } else {
+                    waterElement.className = 'value status-water-low';
+                }
+
+                const mildewElement = document.getElementById('mildew-risk');
+                if (farmerData.mildewRisk === 'ELEVE') {
+                    mildewElement.className = 'value status-disease-high';
+                } else if (farmerData.mildewRisk === 'MOYEN') {
+                    mildewElement.className = 'value status-disease-medium';
+                } else {
+                    mildewElement.className = 'value status-disease-low';
+                }
+
+                const oidumElement = document.getElementById('powdery-mildew-risk');
+                if (farmerData.powderyMildewRisk === 'ELEVE') {
+                    oidumElement.className = 'value status-disease-high';
+                } else if (farmerData.powderyMildewRisk === 'MOYEN') {
+                    oidumElement.className = 'value status-disease-medium';
+                } else {
+                    oidumElement.className = 'value status-disease-low';
+                }
+            }
+
             // Colorer les éléments d'humidité
             const humidityElements = [
                 { id: 'humidity-comfort', value: humidityData.comfort },
@@ -1908,8 +2497,12 @@
             // Charger le mode préféré
             const savedMode = localStorage.getItem('meteo_mode');
             if (savedMode === 'simplified') {
-                isSimplifiedMode = true;
+                currentMode = 'simplified';
                 document.body.classList.add('simplified-mode');
+                document.getElementById('mode-toggle').textContent = 'MODE AGRICULTEUR';
+            } else if (savedMode === 'farmer') {
+                currentMode = 'farmer';
+                document.body.classList.add('farmer-mode');
                 document.getElementById('mode-toggle').textContent = 'MODE AVANCÉ';
             }
 
