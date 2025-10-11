@@ -785,6 +785,59 @@
         .farmer-mode .status-disease-medium { color: #ffaa44; }
         .farmer-mode .status-disease-low { color: #44ff44; }
 
+        /* Styles spécifiques pépinière */
+        .nursery-section {
+            margin: 30px 0;
+            border: solid 1px #666;
+            padding: 20px;
+            background: rgba(139, 115, 85, 0.02);
+        }
+
+        .nursery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .nursery-panel {
+            border: solid 1px #6b8e23;
+            padding: 20px;
+            background: rgba(107, 142, 35, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nursery-panel .panel-title {
+            color: #6b8e23;
+            border-bottom-color: #666;
+        }
+
+        .nursery-calendar {
+            margin: 30px 0;
+            border: solid 1px #666;
+            padding: 20px;
+        }
+
+        .nursery-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        /* Couleurs spécifiques pépinière */
+        .farmer-mode .status-young-frost-high { color: #ff2222; }
+        .farmer-mode .status-young-frost-medium { color: #ff8844; }
+        .farmer-mode .status-young-frost-low { color: #66ff66; }
+
+        .farmer-mode .status-fruit-disease-high { color: #ff2222; }
+        .farmer-mode .status-fruit-disease-medium { color: #ff8844; }
+        .farmer-mode .status-fruit-disease-low { color: #66ff66; }
+
+        .farmer-mode .status-flowering-good { color: #66ff66; }
+        .farmer-mode .status-flowering-caution { color: #ffaa44; }
+        .farmer-mode .status-flowering-bad { color: #ff4444; }
+
         @media (max-width: 768px) {
             body {
                 font-size: 12px;
@@ -816,6 +869,14 @@
             }
 
             .farmer-calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nursery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nursery-calendar-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1188,6 +1249,95 @@
                          <div class="calendar-item">
                              <span>SECHAGE RECOLTES:</span>
                              <span class="value" id="drying-conditions">FAVORABLES</span>
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Section Pépiniériste -->
+                 <div class="nursery-section">
+                     <div class="panel-title">[ PÉPINIÈRE - ARBRES FRUITIERS ]</div>
+
+                     <div class="nursery-grid">
+                         <div class="nursery-panel">
+                             <div class="panel-title">[ PROTECTION JEUNES PLANTS ]</div>
+                             <div class="data-line">
+                                 <span class="label">RISQUE GEL ARBRES 1-2 ANS:</span>
+                                 <span class="value" id="young-tree-frost">FAIBLE</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">PROTECTION HIVERNALE:</span>
+                                 <span class="value" id="winter-protection">PAILLIS</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">ARROSAGE HIVERNAL:</span>
+                                 <span class="value" id="winter-watering">MODERE</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">TAILLE HIVERNALE:</span>
+                                 <span class="value" id="winter-pruning">POSSIBLE</span>
+                             </div>
+                         </div>
+
+                         <div class="nursery-panel">
+                             <div class="panel-title">[ MALADIES FRUITIERS ]</div>
+                             <div class="data-line">
+                                 <span class="label">RISQUE TAVELURE:</span>
+                                 <span class="value" id="scab-risk">FAIBLE</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">RISQUE MONILIOSE:</span>
+                                 <span class="value" id="monilinia-risk">FAIBLE</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">RISQUE OIDIUM FRUITIERS:</span>
+                                 <span class="value" id="fruit-powdery-mildew">FAIBLE</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">TRAITEMENT PREVENTIF:</span>
+                                 <span class="value" id="preventive-treatment">NON</span>
+                             </div>
+                         </div>
+
+                         <div class="nursery-panel">
+                             <div class="panel-title">[ FLORAISON & POLLINISATION ]</div>
+                             <div class="data-line">
+                                 <span class="label">CONDITIONS FLORAISON:</span>
+                                 <span class="value" id="flowering-conditions">FAVORABLES</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">RISQUE GEL FLORAISON:</span>
+                                 <span class="value" id="flowering-frost-risk">AUCUN</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">ACTIVITE ABEILLES:</span>
+                                 <span class="value" id="bee-activity">MODEREE</span>
+                             </div>
+                             <div class="data-line">
+                                 <span class="label">FENETRE POLLINISATION:</span>
+                                 <span class="value" id="pollination-window">-- jours</span>
+                             </div>
+                         </div>
+                     </div>
+
+                     <div class="nursery-calendar">
+                         <div class="panel-title">[ CALENDRIER PÉPINIÈRE ]</div>
+                         <div class="nursery-calendar-grid">
+                             <div class="calendar-item">
+                                 <span>PLANTATION PRINTEMPS:</span>
+                                 <span class="value" id="spring-planting">ATTENDRE</span>
+                             </div>
+                             <div class="calendar-item">
+                                 <span>TAILLE ETE:</span>
+                                 <span class="value" id="summer-pruning">POSSIBLE</span>
+                             </div>
+                             <div class="calendar-item">
+                                 <span>RECOLTE FRUITS:</span>
+                                 <span class="value" id="fruit-harvest">--</span>
+                             </div>
+                             <div class="calendar-item">
+                                 <span>PREPARATION HIVER:</span>
+                                 <span class="value" id="winter-prep">EN COURS</span>
+                             </div>
                          </div>
                      </div>
                  </div>
@@ -1928,7 +2078,113 @@
             const soilWork = rain < 0.5 && windSpeed < 20 ? "OUI" : "NON";
             const dryingConditions = humidity < 70 && windSpeed > 5 ? "FAVORABLES" : "DIFFICILES";
 
+            // === CALCULS SPÉCIFIQUES PÉPINIÈRE ===
+
+            // Protection jeunes plants (arbres 1-2 ans plus sensibles au gel)
+            let youngTreeFrost = "FAIBLE";
+            if (minTempToday <= -5) {
+                youngTreeFrost = "ELEVE";
+            } else if (minTempToday <= -2) {
+                youngTreeFrost = "MOYEN";
+            }
+
+            // Protection hivernale
+            let winterProtection = "PAILLIS";
+            if (minTempToday <= -10) {
+                winterProtection = "VOILE + PAILLIS";
+            } else if (minTempToday <= -5) {
+                winterProtection = "PAILLIS EPAIS";
+            }
+
+            // Arrosage hivernal (prévention dessèchement)
+            let winterWatering = "MODERE";
+            if (humidity < 40 && windSpeed > 10) {
+                winterWatering = "SUPPLEMENTAIRE";
+            } else if (humidity < 60) {
+                winterWatering = "NORMAL";
+            } else {
+                winterWatering = "REDUIT";
+            }
+
+            // Taille hivernale (conditions météo)
+            let winterPruning = "POSSIBLE";
+            if (minTempToday < -5) {
+                winterPruning = "ATTENDRE RECHAUFFEMENT";
+            } else if (rain > 2) {
+                winterPruning = "ATTENDRE TEMPS SEC";
+            }
+
+            // Maladies spécifiques fruitiers
+            let scabRisk = "FAIBLE"; // Tavelure
+            let moniliniaRisk = "FAIBLE"; // Moniliose
+            let fruitPowderyMildew = "FAIBLE"; // Oïdium fruitiers
+            let preventiveTreatment = "NON";
+
+            // Tavelure (humidité + température douce)
+            if (humidity > 70 && temp > 5 && temp < 15 && rain > 1) {
+                scabRisk = "ELEVE";
+                preventiveTreatment = "OUI - CUIVRE";
+            } else if (humidity > 60 && temp > 8 && temp < 18) {
+                scabRisk = "MOYEN";
+            }
+
+            // Moniliose (humidité + fleurs)
+            if (humidity > 80 && temp > 10 && temp < 20 && rain > 0.5) {
+                moniliniaRisk = "ELEVE";
+            } else if (humidity > 70 && temp > 12 && temp < 18) {
+                moniliniaRisk = "MOYEN";
+            }
+
+            // Oïdium fruitiers (sécheresse + chaleur)
+            if (humidity < 50 && temp > 20) {
+                fruitPowderyMildew = "ELEVE";
+            } else if (humidity < 60 && temp > 18) {
+                fruitPowderyMildew = "MOYEN";
+            }
+
+            // Conditions de floraison
+            let floweringConditions = "FAVORABLES";
+            if (windSpeed > 20) {
+                floweringConditions = "VENTEUSES";
+            } else if (rain > 5) {
+                floweringConditions = "PLUVIEUSES";
+            }
+
+            // Risque gel floraison (printemps)
+            let floweringFrostRisk = "AUCUN";
+            const currentMonth = new Date().getMonth();
+            if (currentMonth >= 2 && currentMonth <= 4) { // Mars à mai
+                if (minTempToday <= -2) {
+                    floweringFrostRisk = "ELEVE";
+                } else if (minTempToday <= 0) {
+                    floweringFrostRisk = "MOYEN";
+                }
+            }
+
+            // Activité des abeilles
+            let beeActivity = "MODEREE";
+            if (temp < 10) {
+                beeActivity = "FAIBLE";
+            } else if (temp > 18 && windSpeed < 15) {
+                beeActivity = "ELEVE";
+            } else if (temp > 25 || windSpeed > 20) {
+                beeActivity = "REDUITE";
+            }
+
+            // Fenêtre pollinisation
+            let pollinationWindow = 0;
+            if (temp > 12 && temp < 25 && windSpeed < 20) {
+                pollinationWindow = daily.temperature_2m_max.slice(0, 7).filter(t => t > 15 && t < 25).length;
+            }
+
+            // Calendrier pépinière
+            const springPlanting = temp > 8 && temp < 18 && rain < 2 ? "FAVORABLE" : "ATTENDRE";
+            const summerPruning = temp > 15 && humidity < 80 && windSpeed < 15 ? "POSSIBLE" : "ATTENDRE";
+            const fruitHarvest = harvestWindow > 3 ? "PROCHAINEMENT" : "PLUS TARD";
+            const winterPrep = minTempToday < 5 ? "URGENT" : "EN COURS";
+
             return {
+                // Données agricoles existantes
                 frostRiskToday,
                 frostNextNights,
                 frostProtection,
@@ -1948,7 +2204,24 @@
                 optimalSeeding,
                 harvestWindow,
                 soilWork,
-                dryingConditions
+                dryingConditions,
+                // Nouvelles données pépinière
+                youngTreeFrost,
+                winterProtection,
+                winterWatering,
+                winterPruning,
+                scabRisk,
+                moniliniaRisk,
+                fruitPowderyMildew,
+                preventiveTreatment,
+                floweringConditions,
+                floweringFrostRisk,
+                beeActivity,
+                pollinationWindow,
+                springPlanting,
+                summerPruning,
+                fruitHarvest,
+                winterPrep
             };
         }
 
@@ -2332,6 +2605,32 @@
                 document.getElementById('soil-work').textContent = farmerData.soilWork;
                 document.getElementById('drying-conditions').textContent = farmerData.dryingConditions;
 
+                // === DONNÉES PÉPINIÈRE ===
+
+                // Protection jeunes plants
+                document.getElementById('young-tree-frost').textContent = farmerData.youngTreeFrost;
+                document.getElementById('winter-protection').textContent = farmerData.winterProtection;
+                document.getElementById('winter-watering').textContent = farmerData.winterWatering;
+                document.getElementById('winter-pruning').textContent = farmerData.winterPruning;
+
+                // Maladies fruitiers
+                document.getElementById('scab-risk').textContent = farmerData.scabRisk;
+                document.getElementById('monilinia-risk').textContent = farmerData.moniliniaRisk;
+                document.getElementById('fruit-powdery-mildew').textContent = farmerData.fruitPowderyMildew;
+                document.getElementById('preventive-treatment').textContent = farmerData.preventiveTreatment;
+
+                // Floraison et pollinisation
+                document.getElementById('flowering-conditions').textContent = farmerData.floweringConditions;
+                document.getElementById('flowering-frost-risk').textContent = farmerData.floweringFrostRisk;
+                document.getElementById('bee-activity').textContent = farmerData.beeActivity;
+                document.getElementById('pollination-window').textContent = farmerData.pollinationWindow + " jours";
+
+                // Calendrier pépinière
+                document.getElementById('spring-planting').textContent = farmerData.springPlanting;
+                document.getElementById('summer-pruning').textContent = farmerData.summerPruning;
+                document.getElementById('fruit-harvest').textContent = farmerData.fruitHarvest;
+                document.getElementById('winter-prep').textContent = farmerData.winterPrep;
+
                 // Colorer selon les niveaux de risque
                 const frostElement = document.getElementById('frost-risk-today');
                 if (farmerData.frostRiskToday === 'ELEVE') {
@@ -2340,6 +2639,86 @@
                     frostElement.className = 'value status-frost-medium';
                 } else {
                     frostElement.className = 'value status-frost-low';
+                }
+
+                const waterElement = document.getElementById('water-stress');
+                if (farmerData.waterStress === 'ELEVE') {
+                    waterElement.className = 'value status-water-high';
+                } else if (farmerData.waterStress === 'MOYEN') {
+                    waterElement.className = 'value status-water-medium';
+                } else {
+                    waterElement.className = 'value status-water-low';
+                }
+
+                const mildewElement = document.getElementById('mildew-risk');
+                if (farmerData.mildewRisk === 'ELEVE') {
+                    mildewElement.className = 'value status-disease-high';
+                } else if (farmerData.mildewRisk === 'MOYEN') {
+                    mildewElement.className = 'value status-disease-medium';
+                } else {
+                    mildewElement.className = 'value status-disease-low';
+                }
+
+                const oidumElement = document.getElementById('powdery-mildew-risk');
+                if (farmerData.powderyMildewRisk === 'ELEVE') {
+                    oidumElement.className = 'value status-disease-high';
+                } else if (farmerData.powderyMildewRisk === 'MOYEN') {
+                    oidumElement.className = 'value status-disease-medium';
+                } else {
+                    oidumElement.className = 'value status-disease-low';
+                }
+
+                // Colorer les éléments pépinière
+                const youngFrostElement = document.getElementById('young-tree-frost');
+                if (farmerData.youngTreeFrost === 'ELEVE') {
+                    youngFrostElement.className = 'value status-young-frost-high';
+                } else if (farmerData.youngTreeFrost === 'MOYEN') {
+                    youngFrostElement.className = 'value status-young-frost-medium';
+                } else {
+                    youngFrostElement.className = 'value status-young-frost-low';
+                }
+
+                const scabElement = document.getElementById('scab-risk');
+                if (farmerData.scabRisk === 'ELEVE') {
+                    scabElement.className = 'value status-fruit-disease-high';
+                } else if (farmerData.scabRisk === 'MOYEN') {
+                    scabElement.className = 'value status-fruit-disease-medium';
+                } else {
+                    scabElement.className = 'value status-fruit-disease-low';
+                }
+
+                const moniliniaElement = document.getElementById('monilinia-risk');
+                if (farmerData.moniliniaRisk === 'ELEVE') {
+                    moniliniaElement.className = 'value status-fruit-disease-high';
+                } else if (farmerData.moniliniaRisk === 'MOYEN') {
+                    moniliniaElement.className = 'value status-fruit-disease-medium';
+                } else {
+                    moniliniaElement.className = 'value status-fruit-disease-low';
+                }
+
+                const fruitPowderyElement = document.getElementById('fruit-powdery-mildew');
+                if (farmerData.fruitPowderyMildew === 'ELEVE') {
+                    fruitPowderyElement.className = 'value status-fruit-disease-high';
+                } else if (farmerData.fruitPowderyMildew === 'MOYEN') {
+                    fruitPowderyElement.className = 'value status-fruit-disease-medium';
+                } else {
+                    fruitPowderyElement.className = 'value status-fruit-disease-low';
+                }
+
+                const floweringElement = document.getElementById('flowering-conditions');
+                if (farmerData.floweringConditions === 'FAVORABLES') {
+                    floweringElement.className = 'value status-flowering-good';
+                } else {
+                    floweringElement.className = 'value status-flowering-caution';
+                }
+
+                const floweringFrostElement = document.getElementById('flowering-frost-risk');
+                if (farmerData.floweringFrostRisk === 'ELEVE') {
+                    floweringFrostElement.className = 'value status-flowering-bad';
+                } else if (farmerData.floweringFrostRisk === 'MOYEN') {
+                    floweringFrostElement.className = 'value status-flowering-caution';
+                } else {
+                    floweringFrostElement.className = 'value status-flowering-good';
                 }
 
                 const waterElement = document.getElementById('water-stress');
