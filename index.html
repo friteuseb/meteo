@@ -460,6 +460,144 @@
             border-bottom: none;
         }
 
+        /* Mode Simplifié - Style app mobile */
+        .simplified-mode .container {
+            max-width: 600px;
+        }
+
+        .simplified-mode .header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .simplified-mode .title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .simplified-mode .subtitle {
+            font-size: 16px;
+        }
+
+        .simplified-mode .timestamp {
+            font-size: 14px;
+            margin: 15px 0;
+        }
+
+        .simplified-mode .weather-visual {
+            text-align: center;
+            padding: 30px 20px;
+            margin: 20px 0;
+        }
+
+        .simplified-mode .weather-icon {
+            font-size: 6em;
+            margin: 20px 0;
+        }
+
+        .simplified-mode .weather-description {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        .simplified-mode .current-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .simplified-mode .summary-item {
+            padding: 20px;
+            border: 2px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .simplified-mode .summary-label {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .simplified-mode .summary-value {
+            color: #00ff00;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .simplified-mode .forecast-section {
+            margin: 30px 0;
+        }
+
+        .simplified-mode .forecast-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .simplified-mode .forecast-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .simplified-mode .forecast-day {
+            border: 2px solid #00ff00;
+            padding: 20px 10px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .simplified-mode .forecast-day.today {
+            border-color: #ffff00;
+            background: rgba(255, 255, 0, 0.1);
+        }
+
+        .simplified-mode .forecast-day-name {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .simplified-mode .forecast-icon {
+            font-size: 48px;
+            margin: 15px 0;
+        }
+
+        .simplified-mode .forecast-temps {
+            font-size: 20px;
+            margin: 15px 0;
+        }
+
+        .simplified-mode .temp-max {
+            color: #ff6666;
+            font-weight: bold;
+        }
+
+        .simplified-mode .temp-min {
+            color: #6666ff;
+        }
+
+        .simplified-mode .forecast-rain {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* Masquer les sections avancées en mode simple */
+        .simplified-mode .main-grid,
+        .simplified-mode .hourly-forecast,
+        .simplified-mode .activity-section,
+        .simplified-mode .panel {
+            display: none !important;
+        }
+
+        /* Afficher seulement les sections simplifiées */
+        .simplified-mode .current-summary,
+        .simplified-mode .forecast-section {
+            display: block !important;
+        }
+
         @media (max-width: 768px) {
             body {
                 font-size: 12px;
@@ -471,6 +609,14 @@
             }
 
             .activity-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .simplified-mode .forecast-container {
+                grid-template-columns: 1fr;
+            }
+
+            .simplified-mode .current-summary {
                 grid-template-columns: 1fr;
             }
         }
@@ -488,7 +634,10 @@
             <div class="city-display" id="city-display" style="color: #ffff00; font-size: 12px; margin: 5px 0; text-align: center;">Ville: AMIENS</div>
             <div class="subtitle">Données en temps réel</div>
             <div class="timestamp" id="timestamp">DERNIERE MAJ: --</div>
-            <button onclick="loadWeatherData(true)" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; margin-top: 10px; cursor: pointer; font-family: inherit; font-size: 11px;">↻ RAFRAICHIR</button>
+            <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
+                <button onclick="toggleMode()" id="mode-toggle" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">MODE SIMPLE</button>
+                <button onclick="loadWeatherData(true)" style="background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 11px;">↻ RAFRAICHIR</button>
+            </div>
         </div>
 
         <div class="loading" id="loading">
@@ -518,6 +667,26 @@
                         <div class="sun-label">LUMIERE RESTANTE</div>
                         <div class="sun-value" id="daylight-remaining">--h--</div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Résumé simplifié pour le mode simple -->
+            <div class="current-summary" id="current-summary" style="display: none;">
+                <div class="summary-item">
+                    <div class="summary-label">TEMPÉRATURE</div>
+                    <div class="summary-value" id="simple-temp">--°C</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">PRÉCIPITATIONS</div>
+                    <div class="summary-value" id="simple-rain">--%</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">VENT</div>
+                    <div class="summary-value" id="simple-wind">-- km/h</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">VISIBILITÉ</div>
+                    <div class="summary-value" id="simple-visibility">-- km</div>
                 </div>
             </div>
 
@@ -728,6 +897,9 @@
             lat: 49.9,
             lon: 2.3
         };
+
+        // Mode d'affichage
+        let isSimplifiedMode = false;
 
         // Système de cache par ville
         const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes en millisecondes
@@ -1021,9 +1193,9 @@
             document.getElementById('hourly-container').innerHTML = hourlyHTML;
         }
 
-        // Afficher prévisions 7 jours
+        // Afficher prévisions 7 jours (3 jours en mode simple)
         function displayWeeklyForecast(daily) {
-            const days = 7;
+            const days = isSimplifiedMode ? 3 : 7;
             const dayNames = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
             const dayNamesFull = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
@@ -1392,6 +1564,28 @@
             loadWeatherData(true);
         }
 
+        // Basculer entre mode simple et avancé
+        function toggleMode() {
+            isSimplifiedMode = !isSimplifiedMode;
+            const body = document.body;
+            const toggleBtn = document.getElementById('mode-toggle');
+
+            if (isSimplifiedMode) {
+                body.classList.add('simplified-mode');
+                toggleBtn.textContent = 'MODE AVANCÉ';
+                localStorage.setItem('meteo_mode', 'simplified');
+            } else {
+                body.classList.remove('simplified-mode');
+                toggleBtn.textContent = 'MODE SIMPLE';
+                localStorage.setItem('meteo_mode', 'advanced');
+            }
+
+            // Recharger l'affichage avec le nouveau mode
+            if (window.lastWeatherData) {
+                displayWeatherData(window.lastWeatherData);
+            }
+        }
+
         // Système de cache pour limiter les appels API
         function getCachedData() {
             try {
@@ -1471,10 +1665,16 @@
             const current = data.current;
             const daily = data.daily;
 
+            // Sauvegarder les données pour le toggle de mode
+            window.lastWeatherData = data;
+
             // Température
             document.getElementById('temp-current').textContent = `${Math.round(current.temperature_2m)}°C`;
             document.getElementById('temp-feels').textContent = `${Math.round(current.apparent_temperature)}°C`;
             document.getElementById('temp-minmax').textContent = `${Math.round(daily.temperature_2m_min[0])}°C / ${Math.round(daily.temperature_2m_max[0])}°C`;
+
+            // Résumé simplifié
+            document.getElementById('simple-temp').textContent = `${Math.round(current.temperature_2m)}°C`;
 
             // Précipitations
             const rainProb = daily.precipitation_probability_max[0] || 0;
@@ -1482,12 +1682,18 @@
             document.getElementById('rain-amount').textContent = current.precipitation > 0 ? `${current.precipitation.toFixed(1)} mm` : "< 0.1 mm";
             document.getElementById('umbrella-needed').textContent = rainProb > 70 ? "OUI" : "NON";
 
+            // Résumé simplifié - précipitations
+            document.getElementById('simple-rain').textContent = `${rainProb}%`;
+
             // Vent
             document.getElementById('wind-speed').textContent = `${Math.round(current.wind_speed_10m)} km/h`;
             document.getElementById('wind-gusts').textContent = `${Math.round(current.wind_gusts_10m)} km/h`;
             document.getElementById('wind-direction').textContent = getWindDirection(current.wind_direction_10m);
             document.getElementById('wind-class').textContent = getWindClassification(current.wind_speed_10m);
             document.getElementById('wind-danger').textContent = current.wind_speed_10m > 50 ? "OUI" : "NON";
+
+            // Résumé simplifié - vent
+            document.getElementById('simple-wind').textContent = `${Math.round(current.wind_speed_10m)} km/h`;
 
             // Visibilité et phares
             const visibility = current.visibility || 10000;
@@ -1497,6 +1703,9 @@
             if (visibility < 1000) {
                 document.getElementById('headlights').className = 'value warning';
             }
+
+            // Résumé simplifié - visibilité
+            document.getElementById('simple-visibility').textContent = visibility > 1000 ? `${visibilityKm} km` : `${visibility}m`;
 
             // Indice UV
             const uvIndex = current.uv_index || 0;
@@ -1694,6 +1903,14 @@
             function updateFooter() {
                 document.getElementById('footer-city').textContent = currentCity.name;
                 document.getElementById('footer-coords').textContent = `${currentCity.lat.toFixed(1)}°N, ${currentCity.lon.toFixed(1)}°E`;
+            }
+
+            // Charger le mode préféré
+            const savedMode = localStorage.getItem('meteo_mode');
+            if (savedMode === 'simplified') {
+                isSimplifiedMode = true;
+                document.body.classList.add('simplified-mode');
+                document.getElementById('mode-toggle').textContent = 'MODE AVANCÉ';
             }
 
             // Charger les données au démarrage
