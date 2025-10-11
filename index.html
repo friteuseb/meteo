@@ -2449,12 +2449,14 @@
             const buttons = ['advanced', 'simplified', 'farmer'];
             buttons.forEach(mode => {
                 const button = document.getElementById(`mode-${mode}`);
-                if (currentMode === mode) {
-                    button.style.background = 'rgba(0, 255, 0, 0.2)';
-                    button.style.borderColor = '#ffff00';
-                } else {
-                    button.style.background = 'transparent';
-                    button.style.borderColor = '#00ff00';
+                if (button) { // Vérifier que le bouton existe
+                    if (currentMode === mode) {
+                        button.style.background = 'rgba(0, 255, 0, 0.2)';
+                        button.style.borderColor = '#ffff00';
+                    } else {
+                        button.style.background = 'transparent';
+                        button.style.borderColor = '#00ff00';
+                    }
                 }
             });
         }
