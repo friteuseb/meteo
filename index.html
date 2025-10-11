@@ -6,9 +6,10 @@
     <title>Météo Amiens - Temps réel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
 
-    <!-- Google tag (gtag.js) -->
+     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-F1Z1EG4HZS"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -2210,7 +2211,6 @@
 
             // Risque gel floraison (printemps)
             let floweringFrostRisk = "AUCUN";
-            const currentMonth = new Date().getMonth();
             if (currentMonth >= 2 && currentMonth <= 4) { // Mars à mai
                 if (minTempToday <= -2) {
                     floweringFrostRisk = "ELEVE";
