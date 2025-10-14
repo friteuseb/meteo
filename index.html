@@ -1615,7 +1615,8 @@
         }
 
         // Afficher les prévisions horaires
-        function displayHourlyForecast(hourlyData) {
+        function displayHourlyForecast(data) {
+            const hourlyData = data.hourly;
             if (!hourlyData || !hourlyData.time) return;
 
             const periods = getHourlyPeriods(hourlyData);
@@ -1646,11 +1647,26 @@
                 // Format de l'heure
                 const timeStr = period.hour.toString().padStart(2, '0') + ':00';
 
+                // Utiliser la même logique que les conditions actuelles pour "MAINTENANT"
+                let icon = "";
+                if (period.isCurrent) {
+                    const currentViz = getWeatherVisualization(
+                        data.current.weather_code,
+                        data.current.is_day === 1,
+                        data.current.precipitation,
+                        data.current.cloud_cover,
+                        data.current.wind_speed_10m
+                    );
+                    icon = currentViz.emoji;
+                } else {
+                    icon = getHourlyWeatherEmoji(weatherCode, isDay);
+                }
+
                 hourlyHTML += `
                     <div class="hourly-item ${period.isCurrent ? 'current' : ''}">
                         <div class="hourly-period">${period.label}</div>
                         <div class="hourly-time">${timeStr}</div>
-                        <div class="hourly-icon">${getHourlyWeatherEmoji(weatherCode, isDay)}</div>
+                        <div class="hourly-icon">${icon}</div>
                         <div class="hourly-temp">${temp}°</div>
                         ${rainProb > 0 ? `<div class="hourly-rain">☂ ${rainProb}%</div>` : '<div class="hourly-rain">&nbsp;</div>'}
                         <div class="hourly-wind">💨 ${windSpeed} km/h</div>
@@ -2626,7 +2642,7 @@
 
             // Prévisions horaires
             if (data.hourly) {
-                displayHourlyForecast(data.hourly);
+                displayHourlyForecast(data);
             }
 
             // Graphique prévisions 7 jours
